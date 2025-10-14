@@ -137,20 +137,20 @@
       plus: 0,
       char: {
         builtins: [ 
-          { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false, editable: false }
-          { id: crypto.randomUUID(), name: 'キラー', value: 1.50, checked: false, editable: true }
-          { id: crypto.randomUUID(), name: '超ADW', value: 1.30, checked: false, editable: false }
-          { id: crypto.randomUUID(), name: '超AW', value: 1.30, checked: false, editable: true }
-          { id: crypto.randomUUID(), name: '剣', value: 1.50, checked: false, editable: false }
-          { id: crypto.randomUUID(), name: '守護獣', value: 1.20, checked: false, editable: true }
-  　　　　　{ id: crypto.randomUUID(), name: '紋章', value: 1.375, checked: false, editable: true }　 
+          { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false, editable: false },
+          { id: crypto.randomUUID(), name: 'キラー', value: 1.50, checked: false, editable: true },
+          { id: crypto.randomUUID(), name: '超ADW', value: 1.30, checked: false, editable: false },
+          { id: crypto.randomUUID(), name: '超AW', value: 1.30, checked: false, editable: true },
+          { id: crypto.randomUUID(), name: '剣', value: 1.50, checked: false, editable: false },
+          { id: crypto.randomUUID(), name: '守護獣', value: 1.20, checked: false, editable: true },
+  　　　　　{ id: crypto.randomUUID(), name: '紋章', value: 1.375, checked: false, editable: true } 
         ],
         user: []
       },
       enemy: {
         builtins: [ 
-          { id: crypto.randomUUID(), name: '直殴り倍率', value: 2.0, checked: false, editable: true }
-          { id: crypto.randomUUID(), name: '弱点倍率', value: 3.0, checked: false, editable: true }
+          { id: crypto.randomUUID(), name: '直殴り倍率', value: 2.0, checked: false, editable: true },
+          { id: crypto.randomUUID(), name: '弱点倍率', value: 3.0, checked: false, editable: true },
         　 { id: crypto.randomUUID(), name: '防御ダウン倍率', value: 3.0, checked: false, editable: true }
         ],
         user: []
@@ -366,17 +366,17 @@
     document.getElementById('resetBtn').addEventListener('click', ()=>{
       if(!confirm('倍率リストを初期状態に戻しますか？\n)) return
       state.char = { builtins: [ 
-        { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false, editable: false } 
-        { id: crypto.randomUUID(), name: 'キラー', value: 1.50, checked: false, editable: true }
-        { id: crypto.randomUUID(), name: '超ADW', value: 1.30, checked: false, editable: false }
-        { id: crypto.randomUUID(), name: '超AW', value: 1.30, checked: false, editable: true }
-       { id: crypto.randomUUID(), name: '剣', value: 1.50, checked: false, editable: false }
-         { id: crypto.randomUUID(), name: '守護獣', value: 1.20, checked: false, editable: true }
+        { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false, editable: false } ,
+        { id: crypto.randomUUID(), name: 'キラー', value: 1.50, checked: false, editable: true },
+        { id: crypto.randomUUID(), name: '超ADW', value: 1.30, checked: false, editable: false },
+        { id: crypto.randomUUID(), name: '超AW', value: 1.30, checked: false, editable: true },
+       { id: crypto.randomUUID(), name: '剣', value: 1.50, checked: false, editable: false },
+         { id: crypto.randomUUID(), name: '守護獣', value: 1.20, checked: false, editable: true },
   　　　　　{ id: crypto.randomUUID(), name: '紋章', value: 1.375, checked: false, editable: true }
       ], user: [] }
       state.enemy = { builtins: [
-        { id: crypto.randomUUID(), name: '弱点倍率', value: 3.00, checked: false, editable: true } 
-       { id: crypto.randomUUID(), name: '弱点倍率', value: 3.0, checked: false, editable: true }
+        { id: crypto.randomUUID(), name: '弱点倍率', value: 3.00, checked: false, editable: true }, 
+       { id: crypto.randomUUID(), name: '弱点倍率', value: 3.0, checked: false, editable: true },
       { id: crypto.randomUUID(), name: '防御ダウン倍率', value: 3.0, checked: false, editable: true }
       ], user: [] }
       state.stage = { builtins: [], user: [] }
