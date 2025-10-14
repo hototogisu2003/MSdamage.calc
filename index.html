@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ダメージ計算ツール</title>
+  <style>
+    :root{
+      --bg:#0f172a;        /* slate-900 */
+      --panel:#111827;     /* gray-900 */
+      --muted:#94a3b8;     /* slate-400 */
+      --text:#e5e7eb;      /* gray-200 */
+      --accent:#22d3ee;    /* cyan-400 */
+      --accent-2:#60a5fa;  /* blue-400 */
+      --ring:#38bdf8;      /* sky-400 */
+    }
+    html,body{height:100%;}
+    body{margin:0;background:linear-gradient(180deg,#0a0f1f, var(--bg));color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans JP",sans-serif;}
+    .container{max-width:920px;margin:40px auto;padding:24px;}
+    .card{background:rgba(17,24,39,.7);backdrop-filter: blur(6px);border:1px solid rgba(148,163,184,.15);border-radius:18px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.35);}    
+    h1{font-size:clamp(20px,3.6vw,32px);margin:0 0 8px;letter-spacing:.2px}
+    p.sub{margin:0 0 18px;color:var(--muted)}
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(12,1fr)}
+    .col-6{grid-column:span 6}
+    .col-12{grid-column:span 12}
+    @media (max-width:760px){.col-6{grid-column:span 12}}
+    label{display:block;font-size:14px;color:var(--muted);margin:0 0 6px}
+    input[type="number"], input[type="text"]{width:100%;padding:14px 12px;border-radius:12px;border:1px solid rgba(148,163,184,.25);background:#0b1220;color:var(--text);outline:none;transition:border-color .15s, box-shadow .15s}
+    input[type="number"]:focus, input[type="text"]:focus{border-color:var(--ring);box-shadow:0 0 0 3px rgba(56,189,248,.25)}
+    .row{display:flex;gap:10px;align-items:center}
+    .btn{appearance:none;border:1px solid rgba(148,163,184,.3);background:linear-gradient(180deg,#111827,#0b1220);color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600}
+    .btn:hover{border-color:var(--accent);}
+    .btn.secondary{background:transparent}
+    .chip{display:inline-flex;align-items:center;gap:8px;border:1px dashed rgba(148,163,184,.35);padding:8px 10px;border-radius:999px;color:var(--muted);}
+    .checkbox{
+      display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:#0b1220;border:1px solid rgba(148,163,184,.2)
+    }
+    .checkbox input{width:18px;height:18px}
+    .muted{color:var(--muted)}
+    .result{
+      display:flex;flex-direction:column;gap:8px;border:1px solid rgba(96,165,250,.25);background:linear-gradient(180deg,rgba(2,6,23,.6),rgba(2,6,23,.9));padding:18px;border-radius:16px
+    }
+    .result .value{font-size:clamp(28px,4.8vw,44px);font-weight:800;letter-spacing:.5px}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(34,211,238,.15);border:1px solid rgba(34,211,238,.35);color:#a5f3fc;font-size:12px}
+    .footer{margin-top:14px;color:var(--muted);font-size:12px}
+    .multiplier-list{display:grid;gap:10px}
+    .kbd{padding:2px 6px;border:1px solid rgba(148,163,184,.4);border-bottom-width:2px;border-radius:6px;background:#0b1220}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>ダメージ計算ツール</h1>
+      <p class="sub">攻撃力と加撃量を入力し、適用したい倍率にチェックを入れてください。結果は自動計算されます。</p>
+
+      <div class="grid" role="group" aria-label="入力エリア">
+        <div class="col-6">
+          <label for="atk">攻撃力</label>
+          <input id="atk" type="number" min="0" step="1" placeholder="例: 30000" />
+        </div>
+        <div class="col-6">
+          <label for="plus">加撃量</label>
+          <input id="plus" type="number" min="0" step="1" placeholder="例: 3000" />
+        </div>
+        <div class="col-12">
+          <div class="chip mono" id="baseChip">攻撃値 = 攻撃力 + 加撃量 = <span id="atkDisp">0</span> + <span id="plusDisp">0</span> = <strong id="base">0</strong></div>
+        </div>
+      </div>
+
+      <hr style="border: none; border-top:1px solid rgba(148,163,184,.2); margin:18px 0;" />
+
+      <div class="grid" role="group" aria-label="倍率エリア">
+        <div class="col-12">
+          <label>倍率（チェックで適用 / 右側の入力で倍率を編集可）</label>
+          <div id="multiplierList" class="multiplier-list"></div>
+          <div class="row" style="margin-top:10px">
+            <input id="newName" type="text" placeholder="例: ゲージ" style="max-width:240px" />
+            <input id="newValue" type="number" step="0.01" placeholder="例: 1.20" style="max-width:140px" />
+            <button class="btn" id="addBtn" aria-label="倍率を追加">倍率を追加</button>
+            <button class="btn secondary" id="resetBtn" title="デフォルト倍率に戻す">初期化</button>
+          </div>
+          <p class="footer">ヒント: 入力後に <span class="kbd">Tab</span> で確定できます。倍率は乗算（総乗）で適用されます。</p>
+        </div>
+      </div>
+
+      <hr style="border: none; border-top:1px solid rgba(148,163,184,.2); margin:18px 0;" />
+
+      <div class="grid" role="group" aria-label="結果表示">
+        <div class="col-12 result">
+          <div><span class="pill">計算結果</span></div>
+          <div class="value" id="total">0</div>
+          <div class="mono muted" id="formula">= 0 × 1.00 （倍率なし）</div>
+        </div>
+      </div>
+
+      <div class="footer">ブラウザだけで動作します。入力や倍率は自動保存（ローカルストレージ）されます。</div>
+    </div>
+  </div>
+
+  <script>
+    // ---- 永続化ヘルパ ----
+    const store = {
+      load(key, fallback){
+        try{ return JSON.parse(localStorage.getItem(key)) ?? fallback }catch{ return fallback }
+      },
+      save(key, value){
+        try{ localStorage.setItem(key, JSON.stringify(value)) }catch{}
+      }
+    }
+
+    // ---- 状態 ----
+    const state = {
+      atk: 0,
+      plus: 0,
+      multipliers: [] // {id, name, value, checked}
+    }
+
+    const DEFAULT_MULTIPLIERS = [
+      { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false },
+    ]
+
+    // ---- 要素参照 ----
+    const $atk = document.getElementById('atk')
+    const $plus = document.getElementById('plus')
+    const $atkDisp = document.getElementById('atkDisp')
+    const $plusDisp = document.getElementById('plusDisp')
+    const $base = document.getElementById('base')
+    const $multiplierList = document.getElementById('multiplierList')
+    const $total = document.getElementById('total')
+    const $formula = document.getElementById('formula')
+    const $addBtn = document.getElementById('addBtn')
+    const $newName = document.getElementById('newName')
+    const $newValue = document.getElementById('newValue')
+    const $resetBtn = document.getElementById('resetBtn')
+
+    // ---- 初期化 ----
+    function init(){
+      const saved = store.load('damage-calc-state', null)
+      if(saved){
+        state.atk = Number(saved.atk)||0
+        state.plus = Number(saved.plus)||0
+        state.multipliers = Array.isArray(saved.multipliers) && saved.multipliers.length>0 ? saved.multipliers : DEFAULT_MULTIPLIERS
+      }else{
+        state.multipliers = DEFAULT_MULTIPLIERS
+      }
+
+      $atk.value = state.atk
+      $plus.value = state.plus
+
+      renderMultipliers()
+      update()
+    }
+
+    // ---- 乗算計算 ----
+    function product(arr){
+      return arr.reduce((acc, m)=> acc * (m.checked ? Number(m.value)||1 : 1), 1)
+    }
+
+    // ---- UIレンダリング ----
+    function renderMultipliers(){
+      $multiplierList.innerHTML = ''
+      state.multipliers.forEach((m)=>{
+        const row = document.createElement('div')
+        row.className = 'checkbox row'
+
+        const cb = document.createElement('input')
+        cb.type = 'checkbox'
+        cb.checked = !!m.checked
+        cb.setAttribute('aria-label', `${m.name} を適用`)
+        cb.addEventListener('change', ()=>{ m.checked = cb.checked; update() })
+
+        const nameInput = document.createElement('input')
+        nameInput.type = 'text'
+        nameInput.value = m.name
+        nameInput.size = Math.max(6, m.name.length)
+        nameInput.addEventListener('input', ()=>{ m.name = nameInput.value; persist() ; refreshFormulaOnly() })
+
+        const x = document.createElement('span')
+        x.textContent = '×'
+        x.style.opacity = .6
+
+        const valInput = document.createElement('input')
+        valInput.type = 'number'
+        valInput.step = '0.01'
+        valInput.value = m.value
+        valInput.style.maxWidth = '120px'
+        valInput.addEventListener('input', ()=>{ 
+          const v = Number(valInput.value)
+          m.value = (Number.isFinite(v) && v>0) ? v : 1
+          update()
+        })
+
+        const del = document.createElement('button')
+        del.className = 'btn secondary'
+        del.textContent = '削除'
+        del.addEventListener('click', ()=>{
+          state.multipliers = state.multipliers.filter(mm => mm.id !== m.id)
+          renderMultipliers(); update()
+        })
+
+        row.append(cb, nameInput, x, valInput, del)
+        $multiplierList.appendChild(row)
+      })
+    }
+
+    function persist(){
+      store.save('damage-calc-state', state)
+    }
+
+    // ---- メイン計算 ----
+    function update(){
+      const atk = Number($atk.value)||0
+      const plus = Number($plus.value)||0
+      state.atk = atk
+      state.plus = plus
+
+      const base = atk + plus
+      const mult = product(state.multipliers)
+      const total = base * mult
+
+      $atkDisp.textContent = atk.toLocaleString()
+      $plusDisp.textContent = plus.toLocaleString()
+      $base.textContent = base.toLocaleString()
+
+      $total.textContent = Number.isFinite(total) ? Math.round(total).toLocaleString() : '0'
+
+      const checked = state.multipliers.filter(m=>m.checked)
+      const multText = checked.length ? checked.map(m=>`${m.name}×${Number(m.value).toFixed(2)}`).join(' × ') : '倍率なし'
+      const multProd = checked.length ? checked.reduce((acc,m)=> acc * Number(m.value), 1) : 1
+      $formula.textContent = `= ${base.toLocaleString()} × ${multProd.toFixed(2)} （${multText}）`
+
+      persist()
+    }
+
+    function refreshFormulaOnly(){
+      const base = (Number(state.atk)||0) + (Number(state.plus)||0)
+      const checked = state.multipliers.filter(m=>m.checked)
+      const multText = checked.length ? checked.map(m=>`${m.name}×${Number(m.value).toFixed(2)}`).join(' × ') : '倍率なし'
+      const multProd = checked.length ? checked.reduce((acc,m)=> acc * Number(m.value), 1) : 1
+      $formula.textContent = `= ${base.toLocaleString()} × ${multProd.toFixed(2)} （${multText}）`
+    }
+
+    // ---- 追加・初期化 ----
+    $addBtn.addEventListener('click', ()=>{
+      const name = ($newName.value||'倍率').trim()
+      const val = Number($newValue.value)
+      if(!Number.isFinite(val) || val<=0){
+        alert('倍率は 0 より大きい数値で入力してください（例: 1.20）')
+        return
+      }
+      state.multipliers.push({ id: crypto.randomUUID(), name, value: val, checked: true })
+      $newName.value = ''
+      $newValue.value = ''
+      renderMultipliers(); update()
+    })
+
+    $resetBtn.addEventListener('click', ()=>{
+      if(!confirm('倍率リストを初期状態に戻しますか？')) return
+      state.multipliers = DEFAULT_MULTIPLIERS.map(m=>({...m, id: crypto.randomUUID()}))
+      renderMultipliers(); update()
+    })
+
+    // ---- 入力イベント ----
+    $atk.addEventListener('input', update)
+    $plus.addEventListener('input', update)
+
+    // 起動
+    init()
+  </script>
+</body>
+</html>
