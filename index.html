@@ -132,37 +132,36 @@
     }
 
     // ---- 状態 ----
-    const state = {
-      atk: 0,
-      plus: 0,
-      char: {
-        builtins: [ 
-          { id: crypto.randomUUID(), name: 'ゲージ', value: 1.20, checked: false, editable: false },
-          { id: crypto.randomUUID(), name: 'キラー', value: 1.50, checked: false, editable: true },
-          { id: crypto.randomUUID(), name: '超ADW', value: 1.30, checked: false, editable: false },
-          { id: crypto.randomUUID(), name: '超AW', value: 1.30, checked: false, editable: true },
-          { id: crypto.randomUUID(), name: '剣', value: 1.50, checked: false, editable: false },
-          { id: crypto.randomUUID(), name: '守護獣', value: 1.20, checked: false, editable: true },
-  　　　　　{ id: crypto.randomUUID(), name: '紋章', value: 1.375, checked: false, editable: true } 
-        ],
-        user: []
-      },
-      enemy: {
-        builtins: [ 
-          { id: crypto.randomUUID(), name: '直殴り倍率', value: 2.0, checked: false, editable: true },
-          { id: crypto.randomUUID(), name: '弱点倍率', value: 3.0, checked: false, editable: true },
-        　 { id: crypto.randomUUID(), name: '防御ダウン倍率', value: 3.0, checked: false, editable: true }
-        ],
-        user: []
-      },
-      stage: {
-        builtins: [
- 　       { id: crypto.randomUUID(), name: '属性倍率', value: 2.0, checked: false, editable: true }
-          
-        ],
-        user: []
-      }
-    }
+   const state = {
+  atk: 0,
+  plus: 0,
+  char: {
+    builtins: [
+      { id: crypto.randomUUID(), name: 'ゲージ',   value: 1.20,  checked: false, editable: false },
+      { id: crypto.randomUUID(), name: 'キラー',   value: 1.50,  checked: false, editable: true  },
+      { id: crypto.randomUUID(), name: '超ADW',   value: 1.30,  checked: false, editable: false },
+      { id: crypto.randomUUID(), name: '超AW',    value: 1.30,  checked: false, editable: true  },
+      { id: crypto.randomUUID(), name: '剣',      value: 1.50,  checked: false, editable: false },
+      { id: crypto.randomUUID(), name: '守護獣',  value: 1.20,  checked: false, editable: true  },
+      { id: crypto.randomUUID(), name: '紋章',    value: 1.375, checked: false, editable: true  }
+    ],
+    user: []
+  },
+  enemy: {
+    builtins: [
+      { id: crypto.randomUUID(), name: '直殴り倍率',   value: 2.0, checked: false, editable: true },
+      { id: crypto.randomUUID(), name: '弱点倍率',     value: 3.0, checked: false, editable: true },
+      { id: crypto.randomUUID(), name: '防御ダウン倍率', value: 3.0, checked: false, editable: true }
+    ],
+    user: []
+  },
+  stage: {
+    builtins: [
+      { id: crypto.randomUUID(), name: '属性倍率', value: 2.0, checked: false, editable: true }
+    ],
+    user: []
+  }
+}
 
     // ---- 要素参照 ----
     const $atk = document.getElementById('atk')
