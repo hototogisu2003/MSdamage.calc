@@ -271,17 +271,17 @@
 
             <div class="grid-item">
                 <label class="check-label">
-                    <input type="checkbox" id="chk_complex" onchange="toggleComplexInputs()">
+                    <input type="checkbox" id="chk_wboost" onchange="togglewboostInputs()">
                     ウォールブースト
                 </label>
                 <div class="bottom-stack">
-                    <select id="complexGrade" onchange="calculate()" disabled>
+                    <select id="wboostGrade" onchange="calculate()" disabled>
                         <option value="1.5">無印 (1.5)</option>
                         <option value="2.0" selected>M (2.0)</option>
                         <option value="2.5">L (2.5)</option>
                         <option value="3.0">EL (3.0)</option>
                     </select>
-                    <input type="number" id="complexVal" placeholder="数値を入力" value="4" oninput="calculate()" disabled>
+                    <input type="number" id="wboostVal" placeholder="数値を入力" value="4" oninput="calculate()" disabled>
                 </div>
             </div>
 
@@ -315,10 +315,10 @@
 
             <div class="grid-item">
                 <label class="check-label">
-                    <input type="checkbox" id="chk_custom" onchange="toggleInput('customRate', 'chk_custom')">
+                    <input type="checkbox" id="chk_weak" onchange="toggleInput('customRate', 'chk_weak')">
                     弱点倍率
                 </label>
-                <input type="number" id="customRate" value="3.0" step="0.01" oninput="calculate()" disabled>
+                <input type="number" id="weakRate" value="3" step="0.01" oninput="calculate()" disabled>
             </div>
 
         </div>
@@ -363,10 +363,10 @@
     }
 
     // 新規追加: 等級と数値の2つを切り替える関数
-    function toggleComplexInputs() {
-        const isChecked = document.getElementById('chk_complex').checked;
-        document.getElementById('complexGrade').disabled = !isChecked;
-        document.getElementById('complexVal').disabled = !isChecked;
+    function togglewboostInputs() {
+        const isChecked = document.getElementById('chk_wboost').checked;
+        document.getElementById('wboostGrade').disabled = !isChecked;
+        document.getElementById('wboostVal').disabled = !isChecked;
         calculate();
     }
 
@@ -413,19 +413,25 @@
             enemyMultiplier = 1 + (count * 0.05);
         }
 
-        // 8. 新規追加: (入力数)/4 * 等級
-        let complexMultiplier = 1.0;
-        if (document.getElementById('chk_complex').checked) {
-            const grade = parseFloat(document.getElementById('complexGrade').value);
-            const val = parseFloat(document.getElementById('complexVal').value);
-            // 値が入力されていれば計算 (例: 入力4, M=2.0 => 4/4*2.0 = 2.0倍)
+        // 8. ウォールブースト
+        let wboostMultiplier = 1.0;
+        if (document.getElementById('chk_wboost').checked) {
+            const grade = parseFloat(document.getElementById('wboostGrade').value);
+            const val = parseFloat(document.getElementById('wboostVal').value);
             if (!isNaN(val)) {
-                complexMultiplier = (val / 4) * grade;
+                wboostMultiplier = (val / 4) * grade;
             }
         }
 
+        // 9. キラー倍率
+        let weakMultiplier = 1.0;
+        if (document.getElementById('chk_weak').checked) {
+            const val = parseFloat(document.getElementById('weakRate').value);
+            if (!isNaN(val)) weakMultiplier = val;
+        }
+
         // 最終計算
-        const finalDamage = attack * gaugeMultiplier * buttonMultiplier * msMultiplier * sokoMultiplier * customMultiplier * enemyMultiplier * complexMultiplier;
+        const finalDamage = attack * gaugeMultiplier * buttonMultiplier * msMultiplier * sokoMultiplier * customMultiplier * enemyMultiplier * wboostMultiplier * weakMultiplier;
 
         // 結果表示
         document.getElementById('result').innerText = Math.floor(finalDamage).toLocaleString();
