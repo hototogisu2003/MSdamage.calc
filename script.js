@@ -67,10 +67,10 @@ function calculate() {
     }
 
     // キラー倍率
-    let customMultiplier = 1.0;
-    if (document.getElementById('chk_custom').checked) {
-        const val = parseFloat(document.getElementById('customRate').value);
-        if (!isNaN(val)) customMultiplier = val;
+    let killerMultiplier = 1.0;
+    if (document.getElementById('chk_killer').checked) {
+        const val = parseFloat(document.getElementById('killerRate').value);
+        if (!isNaN(val)) killerMultiplier = val;
     }
 
     // ワープ数
@@ -113,7 +113,7 @@ function calculate() {
         * buttonMultiplier  // ボタン補正
         * msMultiplier      // マインスイーパー
         * sokoMultiplier    // 底力
-        * customMultiplier  // キラー
+        * killerMultiplier  // キラー
         * enemyMultiplier   // ワープ数
         * wboostMultiplier // ウォールブースト
         * mboostMultiplier // 魔法陣ブースト
