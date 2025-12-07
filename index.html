@@ -98,6 +98,17 @@
 
             <div class="grid-item">
                 <label class="check-label">
+                    <input type="checkbox" id="chk_aura" onchange="toggleInput('auraSelect', 'chk_aura')">
+                    パワーオーラ
+                </label>
+                <select id="auraSelect" onchange="calculate()" disabled>
+                    <option value="1.5" selected>無印 (x1.5)</option>
+                    <option value="2.0">M (x2.0)</option>
+                </select>
+            </div>
+
+            <div class="grid-item">
+                <label class="check-label">
                     <input type="checkbox" id="chk_wboost" onchange="togglewboostInputs()">
                     ウォールブースト
                 </label>
@@ -106,7 +117,6 @@
                         <option value="1.5" selected>無印 (×1.5)</option>
                         <option value="2.0">M (×2.0)</option>
                         <option value="2.5">L (×2.5)</option>
-                        <option value="3.0">EL (×3.0)</option>
                     </select>
                     <input type="number" id="wboostVal" placeholder="壁数" oninput="calculate()" disabled>
                 </div>
@@ -121,7 +131,6 @@
                     <option value="1.5" selected>無印 (x1.5)</option>
                     <option value="2.0">M (x2.0)</option>
                     <option value="2.5">L (x2.5)</option>
-                    <option value="3.0">EL (x3.0)</option>
                 </select>
             </div>
 
