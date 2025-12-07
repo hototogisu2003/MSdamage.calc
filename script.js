@@ -39,54 +39,64 @@ function togglewboostInputs() {
 
 // 計算メイン処理
 function calculate() {
-    // 1. 攻撃力
+    // 攻撃力
     const attack = parseFloat(document.getElementById('attack').value) || 0;
 
-    // 2. ゲージ
+    // ゲージ
     let gaugeMultiplier = 1.0;
     if (document.getElementById('chk_gauge').checked) {
         gaugeMultiplier = 1.2;
     }
 
-    // 3. ボタン倍率
+    // ボタン倍率
     let buttonMultiplier = 1.0;
     for (const [id, isActive] of Object.entries(activeStates)) {
         if (isActive) buttonMultiplier *= BUTTON_VALUES[id];
     }
 
-    // 4. マインスイーパー
+    // マインスイーパー
     let msMultiplier = 1.0;
     if (document.getElementById('chk_ms').checked) {
         msMultiplier = parseFloat(document.getElementById('msSelect').value);
     }
     
-    // 5. 底力
+    // 底力
     let sokoMultiplier = 1.0;
     if (document.getElementById('chk_soko').checked) {
         sokoMultiplier = parseFloat(document.getElementById('sokoSelect').value);
     }
 
-    // 6. キラー倍率
+    // キラー倍率
     let customMultiplier = 1.0;
     if (document.getElementById('chk_custom').checked) {
         const val = parseFloat(document.getElementById('customRate').value);
         if (!isNaN(val)) customMultiplier = val;
     }
 
-    // 7. ワープ数
+    // ワープ数
     let enemyMultiplier = 1.0;
     if (document.getElementById('chk_warp').checked) {
         const count = parseFloat(document.getElementById('warpCount').value) || 0;
         enemyMultiplier = 1 + (count * 0.05);
     }
 
-    // 8. ブースト(等級計算)
+    // ウォールブースト
     let wboostMultiplier = 1.0;
     if (document.getElementById('chk_wboost').checked) {
         const grade = parseFloat(document.getElementById('wboostGrade').value);
         const val = parseFloat(document.getElementById('wboostVal').value);
         if (!isNaN(val)) {
             wboostMultiplier = (val / 4) * grade;
+        }
+    }
+
+    //  魔法陣ブースト
+    let mboostMultiplier = 1.0;
+    if (document.getElementById('chk_mboost').checked) {
+        const grade = parseFloat(document.getElementById('mboostGrade').value);
+        const val = parseFloat(document.getElementById('mboostVal').value);
+        if (!isNaN(val)) {
+            mboostMultiplier = (val / 4) * grade;
         }
     }
 
@@ -98,7 +108,8 @@ function calculate() {
         * sokoMultiplier    // 底力
         * customMultiplier  // キラー
         * enemyMultiplier   // ワープ数
-        * wboostMultiplier // ブースト
+        * wboostMultiplier // ウォールブースト
+        * mboostMultiplier // 魔法陣ブースト
         ;
 
     // 結果表示
