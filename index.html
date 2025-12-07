@@ -11,15 +11,35 @@
 <div class="container">
     <h1>ダメージ計算ツール</h1>
 
-    <div class="main-input">
-        <label for="attack">攻撃力</label>
-        <div class="input-with-checkbox">
-            <input type="number" id="attack" placeholder="数値を入力" oninput="calculate()" style="flex: 1;">
-            
-            <label class="check-label" style="margin-bottom: 0; white-space: nowrap;">
-                <input type="checkbox" id="chk_gauge" onchange="calculate()">
-                ゲージ (x1.2)
-            </label>
+<div class="main-input">
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+            <label>攻撃ステータス</label>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-size: 0.8rem;">素の攻撃力</span>
+                    <input type="number" id="attack" placeholder="例: 10000" oninput="calculate()" style="width: 120px;">
+                </div>
+
+                <span style="font-weight: bold; padding-top: 15px;">+</span>
+
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-size: 0.8rem;">加撃量</span>
+                    <input type="number" id="attackBonus" placeholder="例: 2000" oninput="calculate()" style="width: 120px;">
+                </div>
+
+                <span style="font-weight: bold; padding-top: 15px;">=</span>
+
+                <div style="padding-top: 15px; font-weight: bold;">
+                    <span id="totalAttackDisplay">0</span>
+                </div>
+            </div>
+
+            <div class="input-with-checkbox" style="margin-top: 10px;">
+                <label class="check-label" style="margin-bottom: 0; white-space: nowrap;">
+                    <input type="checkbox" id="chk_gauge" onchange="calculate()">
+                    ゲージ成功 (x1.2)
+                </label>
+            </div>
         </div>
     </div>
 
