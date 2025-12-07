@@ -305,8 +305,21 @@
                 </label>
                 <input type="number" id="mineRate" step="0.01" oninput="calculate()" disabled>
             </div>
+            
+            <div class="grid-item">
+                <label class="check-label">
+                    <input type="checkbox" id="chk_angry" onchange="toggleInput('angrySelect', 'chk_angry')">
+                    怒り倍率
+                </label>
+                <select id="angrySelect" onchange="calculate()" disabled>
+                    <option value="1.05" selected>小 (x1.05)</option>
+                    <option value="1.10">中 (x1.10)</option>
+                    <option value="1.15">大 (x1.15)</option>
+                </select>
+            </div>
         </div>
-    </div> 
+    </div>
+    
 
     <div class="result-box">
         <span class="result-label">最終ダメージ</span>
