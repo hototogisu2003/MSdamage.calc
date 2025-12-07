@@ -107,7 +107,7 @@ function calculate() {
         if (!isNaN(val)) buffMultiplier = val;
     }
 
-    // バフ倍率
+    // 守護獣倍率
     let killerMultiplier = 1.0;
     if (document.getElementById('chk_guardian').checked) {
         const val = parseFloat(document.getElementById('guardianRate').value);
@@ -148,14 +148,16 @@ function calculate() {
         * buttonMultiplier  // ボタン補正
         * msMultiplier      // マインスイーパー
         * sokoMultiplier    // 底力
-        * killerMultiplier  // キラー
-        * enemyMultiplier   // ワープ数
+        * enemyMultiplier   // 超AW
         * wboostMultiplier // ウォールブースト
         * mboostMultiplier // 魔法陣ブースト
+        * killerMultiplier  // キラー
+        * buffMultiplier  // バフ
+        * guardianMultiplier  // 守護獣
         * weakMultiplier // 弱点
         * naguriMultiplier // 直殴り
         * hontaiMultiplier // 本体倍率
-        * defMultiplier // 本体倍率
+        * defMultiplier // 防御ダウン倍率
         ;
 
     // 結果表示
