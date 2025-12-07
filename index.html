@@ -29,6 +29,7 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            cursor: pointer; /* カーソルを指の形にする */
         }
     </style>
 </head>
@@ -55,11 +56,17 @@
         <div class="grid-4-col">
             
             <div class="grid-item">
-                <div style="height: 24px;"></div> <button id="ab1" class="toggle-btn" onclick="toggleButton('ab1')">超ADW (x1.3)</button>
+                <label class="check-label">
+                    <input type="checkbox" id="chk_ab1" onchange="calculate()">
+                    超ADW (x1.3)
+                </label>
             </div>
 
             <div class="grid-item">
-                <div style="height: 24px;"></div> <button id="ab2" class="toggle-btn" onclick="toggleButton('ab2')">渾身 (x3.0)</button>
+                <label class="check-label">
+                    <input type="checkbox" id="chk_ab2" onchange="calculate()">
+                    渾身 (x3.0)
+                </label>
             </div>
 
             <div class="grid-item">
@@ -157,16 +164,28 @@
         
         <div class="grid-4-col">
             <div class="grid-item">
-                <button id="emb1" class="toggle-btn" onclick="toggleButton('emb1')">対属性 (x1.25)</button>
+                <label class="check-label">
+                    <input type="checkbox" id="chk_emb1" onchange="calculate()">
+                    対属性 (x1.25)
+                </label>
             </div>
             <div class="grid-item">
-                <button id="emb2" class="toggle-btn" onclick="toggleButton('emb2')">対弱 (x1.10)</button>
+                <label class="check-label">
+                    <input type="checkbox" id="chk_emb2" onchange="calculate()">
+                    対弱 (x1.10)
+                </label>
             </div>
             <div class="grid-item">
-                <button id="emb3" class="toggle-btn" onclick="toggleButton('emb3')">対将/対兵 (x1.10)</button>
+                <label class="check-label">
+                    <input type="checkbox" id="chk_emb3" onchange="calculate()">
+                    対将/対兵 (x1.10)
+                </label>
             </div>
             <div class="grid-item">
-                <button id="emb4" class="toggle-btn" onclick="toggleButton('emb4')">守護獣加勢 (x1.08)</button>
+                <label class="check-label">
+                    <input type="checkbox" id="chk_emb4" onchange="calculate()">
+                    守護獣加勢 (x1.08)
+                </label>
             </div>
         </div>
     </div>
