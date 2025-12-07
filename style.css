@@ -214,4 +214,20 @@ input, select, button {
         height: 30px;     /* 高さを少し低く */
         font-size: 12px;  /* 入力文字サイズも微調整 */
     }
+
+    /* --- 結果表示欄の修正 --- */
+    .result-box {
+        padding: 15px 10px; /* 余白を少し狭める */
+        gap: 10px;          /* 「最終ダメージ」と数字の間隔を詰める */
+        flex-wrap: nowrap;  /* ボックス自体の折り返しも禁止 */
+    }
+
+    .result-label {
+        white-space: nowrap; /* ★重要：文字の折り返しを強制的に禁止 */
+        font-size: 14px;     /* スマホでは少し文字を小さく */
+    }
+
+    .result-value {
+        font-size: 24px;     /* 数値が大きすぎてはみ出ないよう調整 */
+    }
 }
