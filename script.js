@@ -30,10 +30,10 @@ function toggleInput(inputId, checkboxId) {
 }
 
 // 等級と数値の2つを切り替える関数
-function toggleComplexInputs() {
-    const isChecked = document.getElementById('chk_complex').checked;
-    document.getElementById('complexGrade').disabled = !isChecked;
-    document.getElementById('complexVal').disabled = !isChecked;
+function togglewboostInputs() {
+    const isChecked = document.getElementById('chk_wboost').checked;
+    document.getElementById('wboostGrade').disabled = !isChecked;
+    document.getElementById('wboostVal').disabled = !isChecked;
     calculate();
 }
 
@@ -81,12 +81,12 @@ function calculate() {
     }
 
     // 8. ブースト(等級計算)
-    let complexMultiplier = 1.0;
-    if (document.getElementById('chk_complex').checked) {
-        const grade = parseFloat(document.getElementById('complexGrade').value);
-        const val = parseFloat(document.getElementById('complexVal').value);
+    let wboostMultiplier = 1.0;
+    if (document.getElementById('chk_wboost').checked) {
+        const grade = parseFloat(document.getElementById('wboostGrade').value);
+        const val = parseFloat(document.getElementById('wboostVal').value);
         if (!isNaN(val)) {
-            complexMultiplier = (val / 4) * grade;
+            wboostMultiplier = (val / 4) * grade;
         }
     }
 
@@ -98,7 +98,7 @@ function calculate() {
         * sokoMultiplier    // 底力
         * customMultiplier  // キラー
         * enemyMultiplier   // ワープ数
-        * complexMultiplier // ブースト
+        * wboostMultiplier // ブースト
         ;
 
     // 結果表示
