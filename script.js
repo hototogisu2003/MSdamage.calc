@@ -139,12 +139,18 @@ function calculate() {
         defMultiplier = parseFloat(document.getElementById('defRate').value) || 1.0;
     }
 
+    // ギミック倍率
+    let gimmickMultiplier = 1.0;
+    if (document.getElementById('chk_gimmick').checked) {
+        gimmickMultiplier = parseFloat(document.getElementById('gimmickRate').value) || 1.0;
+    }
+
 // --- 【新規追加】ステージ倍率 ---
     const stageBase = parseFloat(document.getElementById('stageEffectSelect').value) || 1.0;
     const isStageSpecial = document.getElementById('chk_stageSpecial').checked;
     let stageMultiplier = stageBase;
 
-    // 「特殊」にチェックが入っており、かつ「なし(1.0)」以外が選ばれている場合のみ計算
+    // 超バランス型
     if (isStageSpecial && stageBase !== 1.0) {
         // 計算式: ((効果で選択した倍率) - 1) / 0.33 * 0.596 + 1
         stageMultiplier = ((stageBase - 1) / 0.33) * 0.596 + 1;
@@ -175,6 +181,7 @@ function calculate() {
         * naguriMultiplier
         * hontaiMultiplier
         * defMultiplier
+        * gimmickMultiplier
         * stageMultiplier;
    
     // 結果表示 (小数点以下切り捨て)
