@@ -73,14 +73,7 @@ function calculate() {
         const val = parseFloat(document.getElementById('wboostVal').value) || 0;
         // 壁に触れていなければ1.0、触れていれば計算
         if (val > 0) {
-            // 一般的な仕様: (壁数 * 倍率) ではなく、仕様に合わせて計算式は調整してください
-            // 今回は元のコードの意図「(val / 4) * grade」を尊重しますが、
-            // ウォールブーストは通常「最大倍率」が決まる形式です。
-            // ここでは簡易的に元のロジックを維持します。
             wboostMultiplier = 1 + ((grade - 1) * (val / 4)); 
-            // ※注: 元のコード (val/4)*grade だと、壁数0のとき0倍になってしまうため、
-            // 一般的な「ブースト」の考え方で補正しています。
-            // もし「単に掛け算」したい場合は元の式に戻してください。
         }
     }
 
@@ -146,6 +139,23 @@ function calculate() {
         defMultiplier = parseFloat(document.getElementById('defRate').value) || 1.0;
     }
 
+// --- 【新規追加】ステージ倍率 ---
+    const stageBase = parseFloat(document.getElementById('stageEffectSelect').value) || 1.0;
+    const isStageSpecial = document.getElementById('chk_stageSpecial').checked;
+    let stageMultiplier = stageBase;
+
+    // 「特殊」にチェックが入っており、かつ「なし(1.0)」以外が選ばれている場合のみ計算
+    if (isStageSpecial && stageBase !== 1.0) {
+        // 計算式: ((効果で選択した倍率) - 1) / 0.33 * 0.596 + 1
+        stageMultiplier = ((stageBase - 1) / 0.33) * 0.596 + 1;
+    }
+    
+    // 画面上の実質倍率表示を更新 (小数点第3位まで表示)
+    const displayElem = document.getElementById('stageRealRate');
+    if(displayElem) {
+        displayElem.innerText = Math.floor(stageMultiplier * 1000) / 1000;
+    }
+
     // --- 最終計算 ---
     const finalDamage = attack 
         * gaugeMultiplier
@@ -159,12 +169,13 @@ function calculate() {
         * killerMultiplier
         * buffMultiplier      
         * guardianMultiplier
-        * SSMultiplier;       
+        * SSMultiplier     
         * emb1 * emb2 * emb3 * emb4 // 紋章
         * weakMultiplier
         * naguriMultiplier
         * hontaiMultiplier
-        * defMultiplier;
+        * defMultiplier
+        * stageMultiplier;
    
     // 結果表示 (小数点以下切り捨て)
     document.getElementById('result').innerText = Math.floor(finalDamage).toLocaleString();
