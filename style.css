@@ -125,7 +125,7 @@ input:disabled, select:disabled {
     gap: 8px;
     font-weight: bold;
     color: #9aa0a6;
-    font-size: 0.85rem;
+    font-size: 0.7rem;
     cursor: pointer;
     min-height: 24px;
     line-height: 1.4;
