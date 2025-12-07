@@ -21,7 +21,7 @@
             padding: 24px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            max-width: 600px;
+            max-width: 800px; /* 横並び4つにするため、少し幅を広げました */
             width: 100%;
         }
 
@@ -42,10 +42,9 @@
             background-color: #3c4043;
             color: white;
             box-sizing: border-box;
-            transition: opacity 0.3s; /* 無効化時のアニメーション */
+            transition: opacity 0.3s;
         }
 
-        /* 無効化（disabled）時のスタイル */
         input:disabled, select:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -76,46 +75,55 @@
             font-size: 1rem;
             color: #8ab4f8;
             margin-top: 0;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             border-bottom: 1px solid #5f6368;
             padding-bottom: 5px;
         }
 
-        /* --- グリッドレイアウト --- */
-        .button-grid {
+        /* --- 4列グリッドレイアウト (ここが重要) --- */
+        .grid-4-col {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .input-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr); /* 1行に4つ均等配置 */
             gap: 15px;
-            align-items: start;
+            align-items: start; /* 上揃え */
         }
 
-        /* --- チェックボックス付きラベルのデザイン --- */
+        /* スマホなどの狭い画面では2列にするレスポンシブ対応 */
+        @media (max-width: 600px) {
+            .grid-4-col {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* --- グリッド内のアイテム（入力欄セット） --- */
+        .grid-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        /* --- チェックボックス付きラベル --- */
         .check-label {
             display: flex;
             align-items: center;
-            gap: 8px; /* チェックボックスと文字の間隔 */
-            margin-bottom: 6px;
+            gap: 8px;
             font-weight: bold;
             color: #9aa0a6;
             font-size: 0.85rem;
             cursor: pointer;
+            min-height: 24px; /* 高さ合わせ */
         }
         
         input[type="checkbox"] {
-            transform: scale(1.2); /* チェックボックスを少し大きく */
+            transform: scale(1.2);
             cursor: pointer;
         }
 
         /* --- トグルボタン --- */
         .toggle-btn {
-            padding: 10px;
+            padding: 0; /* 高さを調整 */
+            height: 100%; /* 親要素に合わせる */
+            min-height: 42px; /* 入力欄と高さを合わせる目安 */
             font-size: 0.9rem;
             border: 2px solid #5f6368;
             background-color: #3c4043;
@@ -125,6 +133,9 @@
             transition: all 0.2s;
             font-weight: bold;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .toggle-btn.active {
@@ -135,6 +146,11 @@
 
         .toggle-btn:hover {
             opacity: 0.9;
+        }
+
+        /* ボタンの上にラベル分の余白を作って高さを揃えるためのクラス */
+        .btn-spacer {
+            margin-top: 30px; /* ラベルの高さ分下げる */
         }
 
         /* --- 結果表示 --- */
@@ -174,13 +190,17 @@
     <div class="category-section">
         <h3 class="category-title">アビリティ倍率</h3>
         
-        <div class="button-grid">
-            <button id="ab1" class="toggle-btn" onclick="toggleButton('ab1')">超アンチダメージウォール (x1.3)</button>
-            <button id="ab2" class="toggle-btn" onclick="toggleButton('ab3')">渾身 (x3.0)</button>
-        </div>
+        <div class="grid-4-col">
+            
+            <div class="grid-item">
+                <div style="height: 24px;"></div> <button id="ab1" class="toggle-btn" onclick="toggleButton('ab1')">超ADW (x1.3)</button>
+            </div>
 
-        <div class="input-row">
-            <div>
+            <div class="grid-item">
+                <div style="height: 24px;"></div> <button id="ab2" class="toggle-btn" onclick="toggleButton('ab2')">渾身 (x3.0)</button>
+            </div>
+
+            <div class="grid-item">
                 <label class="check-label">
                     <input type="checkbox" id="chk_size" onchange="toggleInput('sizeSelect', 'chk_size')">
                     マインスイーパー
@@ -192,47 +212,36 @@
                     <option value="3.0">EL (x3.0)</option>
                 </select>
             </div>
-            
-             <div>
+
+            <div class="grid-item">
                 <label class="check-label">
                     <input type="checkbox" id="chk_warp" onchange="toggleInput('warpCount', 'chk_warp')">
                     ワープ数
                 </label>
-                <input type="number" id="warpCount" placeholder="ワープ数を入力" value="1" oninput="calculate()" disabled>
+                <input type="number" id="warpCount" placeholder="数" value="1" oninput="calculate()" disabled>
             </div>
-        </div>
 
-            <div>
-                <label class="check-label">
-                    <input type="checkbox" id="chk_size" onchange="toggleInput('sizeSelect', 'chk_size')">
-                    マインスイーパー
-                </label>
-                <select id="sizeSelect" onchange="calculate()" disabled>
-                    <option value="1.5">無印 (x1.5)</option>
-                    <option value="2.0" selected>M (x2.0)</option>
-                    <option value="2.5">L (x2.5)</option>
-                    <option value="3.0">EL (x3.0)</option>
-                </select>
-            </div>
-            
-            <div>
+            <div class="grid-item">
                 <label class="check-label">
                     <input type="checkbox" id="chk_custom" onchange="toggleInput('customRate', 'chk_custom')">
                     キラー倍率
                 </label>
                 <input type="number" id="customRate" value="1.0" step="0.01" oninput="calculate()" disabled>
             </div>
+
         </div>
     </div>
 
     <div class="category-section">
         <h3 class="category-title">特殊条件・敵倍率</h3>
         
-        <div class="input-row" style="margin-bottom: 15px;">
-
-        <div class="button-grid">
-            <button id="emb1" class="toggle-btn" onclick="toggleButton('emb1')">炎の紋章 (x1.1)</button>
-            <button id="ene2" class="toggle-btn" onclick="toggleButton('ene2')">弱点属性 (x2.0)</button>
+        <div class="grid-4-col">
+            <div class="grid-item">
+                <button id="emb1" class="toggle-btn" onclick="toggleButton('emb1')">炎の紋章 (x1.1)</button>
+            </div>
+            <div class="grid-item">
+                <button id="ene2" class="toggle-btn" onclick="toggleButton('ene2')">弱点属性 (x2.0)</button>
+            </div>
         </div>
     </div>
 
@@ -243,14 +252,14 @@
 </div>
 
 <script>
-    // --- 固定倍率設定 ---
+    // --- 倍率設定 ---
     const BUTTON_VALUES = {
         ab1: 1.3, ab2: 3.0,
         emb1: 1.1, ene2: 2.0
     };
 
     let activeStates = {
-        ab1: false, ab2: false, ab3: false, ab4: false,
+        ab1: false, ab2: false,
         emb1: false, ene2: false
     };
 
@@ -271,10 +280,7 @@
         const input = document.getElementById(inputId);
         const checkbox = document.getElementById(checkboxId);
         
-        // チェックが入っていれば入力可能(disabled = false)、なければ不可(true)
         input.disabled = !checkbox.checked;
-        
-        // 有効/無効が変わったので再計算
         calculate();
     }
 
@@ -289,36 +295,38 @@
             if (isActive) buttonMultiplier *= BUTTON_VALUES[id];
         }
 
-        // 3. サイズ補正 (チェックがある場合のみ計算)
+        // 3. マインスイーパー (サイズ補正)
         let sizeMultiplier = 1.0;
         if (document.getElementById('chk_size').checked) {
             sizeMultiplier = parseFloat(document.getElementById('sizeSelect').value);
         }
 
-        // 4. 任意倍率 (チェックがある場合のみ計算)
+        // 4. キラー倍率 (任意倍率)
         let customMultiplier = 1.0;
         if (document.getElementById('chk_custom').checked) {
             const val = parseFloat(document.getElementById('customRate').value);
             if (!isNaN(val)) customMultiplier = val;
         }
 
-        // 5. 敵の数による倍率 (チェックがある場合のみ計算)
-        // 式: 1 + (敵の数 * 0.05)
+        // 5. ワープ数による倍率
         let enemyMultiplier = 1.0;
         if (document.getElementById('chk_warp').checked) {
             const count = parseFloat(document.getElementById('warpCount').value) || 0;
+            // 式: 1 + (ワープ数 * 0.05)
             enemyMultiplier = 1 + (count * 0.05);
         }
 
-        // 6. 最終計算
+        // 6. 紋章などの固定倍率以外の特殊計算があればここに追加
+        // (今回はすべて buttonMultiplier に含まれているか、上記で計算済み)
+
+        // 7. 最終計算
         const finalDamage = attack * buttonMultiplier * sizeMultiplier * customMultiplier * enemyMultiplier;
 
         // 結果表示
         document.getElementById('result').innerText = Math.floor(finalDamage).toLocaleString();
     }
 
-    // 初期化 (チェックボックスの状態に合わせて入力欄を無効化など)
-    // ページ読み込み時はチェックが外れている前提で計算
+    // 初期化
     calculate();
 </script>
 
