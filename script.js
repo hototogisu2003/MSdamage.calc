@@ -61,6 +61,10 @@ function calculate() {
     const ab2Elem = document.getElementById('chk_ab2');
     let ab2Multiplier = (ab2Elem && ab2Elem.checked) ? 3.0 : 1.0;
 
+   // クリティカル (×7.5)
+    const ab3Elem = document.getElementById('chk_ab3');
+    let ab3Multiplier = (ab3Elem && ab2Elem.checked) ? 7.5 : 1.0;
+
     // マインスイーパー
     let msMultiplier = 1.0;
     const msCheck = document.getElementById('chk_ms');
@@ -221,6 +225,7 @@ function calculate() {
         * gaugeMultiplier
         * ab1Multiplier 
         * ab2Multiplier
+        * ab3Multiplier
         * msMultiplier
         * warpMultiplier
         * sokoMultiplier
