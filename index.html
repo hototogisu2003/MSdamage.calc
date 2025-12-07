@@ -210,6 +210,33 @@
         </div>
     </div>
 
+<div class="category-section">
+        <h3 class="category-title">ステージ倍率</h3>
+        
+        <div class="grid-4-col">
+            <div class="grid-item">
+                <label for="stageEffectSelect">効果選択</label>
+                <select id="stageEffectSelect" onchange="calculate()">
+                    <option value="1.0" selected>なし (x1.0)</option>
+                    <option value="1.33"> (x1.33)</option>
+                    <option value="1.5">属性効果UP (x1.5)</option>
+                    <option value="2.0">属性効果超UP (x2.0)</option>
+                    <option value="3.0">属性効果超絶UP (x3.0)</option>
+                </select>
+            </div>
+
+            <div class="grid-item">
+                <label class="check-label">
+                    <input type="checkbox" id="chk_stageSpecial" onchange="calculate()">
+                    特殊計算を適用
+                </label>
+                <div style="font-size: 0.85rem; color: #555; margin-top: 5px;">
+                    実質倍率: x<span id="stageRealRate">1.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="result-box">
         <span class="result-label">最終ダメージ</span>
         <span id="result" class="result-value">0</span>
