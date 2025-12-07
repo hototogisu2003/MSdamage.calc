@@ -24,7 +24,7 @@
     </div>
 
     <div class="category-section">
-        <h3 class="category-title">アビリティ倍率</h3>
+        <h3 class="category-title">キャラクター倍率</h3>
         
         <div class="grid-4-col">
             
@@ -92,8 +92,20 @@
                     </select>
                     <input type="number" id="wboostVal" placeholder="数値を入力" oninput="calculate()" disabled>
                 </div>
+                
+            <div class="grid-item">
+                <label class="check-label">
+                    <input type="checkbox" id="chk_mboost" onchange="toggleInput('mboostSelect', 'chk_mboost')">
+                    魔法陣ブースト
+                </label>
+                <select id="mboostSelect" onchange="calculate()" disabled>
+                    <option value="1.5">無印 (x1.5)</option>
+                    <option value="2.0" selected>M (x2.0)</option>
+                    <option value="2.5">L (x2.5)</option>
+                    <option value="3.0">EL (x3.0)</option>
+                </select>
             </div>
-
+            </div>
         </div>
     </div>
 
