@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ダメージ計算ツール</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* レイアウト修正用の追加スタイル */
+        .grid-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start !important; /* 強制的に上寄せにする */
+            gap: 8px; /* チェックボックスと入力欄の間の隙間 */
+            height: 100%; /* 高さを揃える */
+        }
+        
+        /* 入力欄等が下に行き過ぎないように調整 */
+        .bottom-stack {
+            margin-top: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        /* チェックボックスラベルの余白調整 */
+        .check-label {
+            margin-bottom: 0 !important;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
 </head>
 <body>
 
@@ -52,7 +78,7 @@
             <div class="grid-item">
                 <label class="check-label">
                     <input type="checkbox" id="chk_warp" onchange="toggleInput('warpCount', 'chk_warp')">
-                    超アンチワープ<br>
+                    超アンチワープ
                 </label>
                 <input type="number" id="warpCount" placeholder="ワープ数" oninput="calculate()" disabled>
             </div>
@@ -92,8 +118,7 @@
                     </select>
                     <input type="number" id="wboostVal" placeholder="数値を入力" oninput="calculate()" disabled>
                 </div>
-                
-            <div class="grid-item">
+            </div> <div class="grid-item">
                 <label class="check-label">
                     <input type="checkbox" id="chk_mboost" onchange="toggleInput('mboostSelect', 'chk_mboost')">
                     魔法陣ブースト
@@ -105,12 +130,12 @@
                     <option value="3.0">EL (x3.0)</option>
                 </select>
             </div>
-            </div>
+
         </div>
     </div>
 
     <div class="category-section">
-        <h3 class="category-title">特殊条件・敵倍率</h3>
+        <h3 class="category-title">紋章</h3>
         
         <div class="grid-4-col">
             <div class="grid-item">
@@ -125,6 +150,22 @@
             <div class="grid-item">
                 <button id="emb4" class="toggle-btn" onclick="toggleButton('emb4')">守護獣加勢 (x1.08)</button>
             </div>
+        </div>
+    </div>
+
+    <div class="category-section">
+        <h3 class="category-title">敵倍率</h3>
+        
+        <div class="grid-4-col">
+
+            <div class="grid-item">
+                <label class="check-label">
+                    <input type="checkbox" id="chk_weak" onchange="toggleInput('Rate', 'chk_weak')">
+                    弱点倍率
+                </label>
+                <input type="number" id="weakRate" value="3.0" step="0.01" oninput="calculate()" disabled>
+            </div>
+
         </div>
     </div>
 
