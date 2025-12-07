@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ダメージ計算ツール</title>
     <style>
-        /* 全体のデザイン（ダークモード風） */
+        /* --- 基本デザイン（ダークモード） --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #202124;
@@ -21,7 +21,7 @@
             padding: 24px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            max-width: 500px;
+            max-width: 600px; /* 横幅を少し広げました */
             width: 100%;
         }
 
@@ -32,7 +32,7 @@
             color: #8ab4f8;
         }
 
-        /* 入力エリアのスタイル */
+        /* --- 入力エリア --- */
         .input-group {
             margin-bottom: 20px;
         }
@@ -44,28 +44,45 @@
             color: #9aa0a6;
         }
 
-        input[type="number"], select {
+        input[type="number"] {
             width: 100%;
             padding: 12px;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             border-radius: 6px;
             border: 1px solid #5f6368;
             background-color: #3c4043;
             color: white;
-            box-sizing: border-box; /* パディングを含めた幅にする */
+            box-sizing: border-box;
         }
 
-        /* トグルボタンのスタイル */
-        .button-group {
-            display: flex;
-            gap: 10px;
+        /* --- カテゴリ分けエリア --- */
+        .category-section {
             margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #5f6368;
+            border-radius: 8px;
+            background-color: #35363a;
+        }
+
+        .category-title {
+            font-size: 1rem;
+            color: #8ab4f8; /* カテゴリ名の色 */
+            margin-top: 0;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #5f6368;
+            padding-bottom: 5px;
+        }
+
+        /* ボタンの配置 */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2列で表示 */
+            gap: 10px;
         }
 
         .toggle-btn {
-            flex: 1;
-            padding: 12px;
-            font-size: 1rem;
+            padding: 10px;
+            font-size: 0.9rem;
             border: 2px solid #5f6368;
             background-color: #3c4043;
             color: #9aa0a6;
@@ -75,9 +92,9 @@
             font-weight: bold;
         }
 
-        /* ボタンがONの状態 */
+        /* ボタンON時のスタイル */
         .toggle-btn.active {
-            background-color: #8ab4f8; /* アクティブ時の色（青） */
+            background-color: #8ab4f8;
             border-color: #8ab4f8;
             color: #202124;
         }
@@ -86,7 +103,7 @@
             opacity: 0.9;
         }
 
-        /* 結果表示エリア */
+        /* --- 結果表示エリア --- */
         .result-box {
             background-color: #171717;
             padding: 20px;
@@ -106,34 +123,45 @@
         .result-value {
             font-size: 2.5rem;
             font-weight: bold;
-            color: #ff8a80; /* 結果を目立たせる色（赤系） */
+            color: #ff8a80;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>ダメージ計算機</h1>
+    <h1>ダメージ計算ツール</h1>
 
     <div class="input-group">
-        <label for="attack">攻撃力</label>
-        <input type="number" id="attack" placeholder="数値を入力 (例: 1000)" oninput="calculate()">
+        <label for="attack">攻撃力 (Base Attack)</label>
+        <input type="number" id="attack" placeholder="攻撃力を入力" oninput="calculate()">
     </div>
 
-    <label>特殊補正 (クリックでON/OFF)</label>
-    <div class="button-group">
-        <button id="btnA" class="toggle-btn" onclick="toggleButton('btnA')">倍率A (x1.3)</button>
-        <button id="btnB" class="toggle-btn" onclick="toggleButton('btnB')">倍率B (x3.0)</button>
+    <div class="category-section">
+        <h3 class="category-title">アビリティ倍率</h3>
+        <div class="button-grid">
+            <button id="ab1" class="toggle-btn" onclick="toggleButton('ab1')">攻撃強化 (x1.2)</button>
+            <button id="ab2" class="toggle-btn" onclick="toggleButton('ab2')">背水 (x1.5)</button>
+            <button id="ab3" class="toggle-btn" onclick="toggleButton('ab3')">渾身 (x1.3)</button>
+            <button id="ab4" class="toggle-btn" onclick="toggleButton('ab4')">クリティカル (x1.5)</button>
+        </div>
     </div>
 
-    <div class="input-group">
-        <label for="selectC">倍率C (サイズ補正)</label>
-        <select id="selectC" onchange="calculate()">
-            <option value="1.5">S (x1.5)</option>
-            <option value="2.0" selected>M (x2.0)</option>
-            <option value="2.5">L (x2.5)</option>
-            <option value="3.0">EL (x3.0)</option>
-        </select>
+    <div class="category-section">
+        <h3 class="category-title">紋章倍率</h3>
+        <div class="button-grid">
+            <button id="emb1" class="toggle-btn" onclick="toggleButton('emb1')">炎の紋章 (x1.1)</button>
+            <button id="emb2" class="toggle-btn" onclick="toggleButton('emb2')">光の紋章 (x1.25)</button>
+        </div>
+    </div>
+
+    <div class="category-section">
+        <h3 class="category-title">敵倍率</h3>
+        <div class="button-grid">
+            <button id="ene1" class="toggle-btn" onclick="toggleButton('ene1')">防御ダウン (x1.2)</button>
+            <button id="ene2" class="toggle-btn" onclick="toggleButton('ene2')">弱点属性 (x2.0)</button>
+            <button id="ene3" class="toggle-btn" onclick="toggleButton('ene3')">耐性持ち (x0.5)</button>
+        </div>
     </div>
 
     <div class="result-box">
@@ -143,54 +171,75 @@
 </div>
 
 <script>
-    // 状態管理用変数
-    let isActiveA = false; // 倍率Aの状態
-    let isActiveB = false; // 倍率Bの状態
+    /* =========================================
+       設定エリア：倍率の値はここで変更してください
+       ========================================= */
+    const VALUES = {
+        // アビリティ倍率
+        ab1: 1.2,  // 攻撃強化
+        ab2: 1.5,  // 背水
+        ab3: 1.3,  // 渾身
+        ab4: 1.5,  // クリティカル
 
-    // ボタンのON/OFFを切り替える関数
-    function toggleButton(btnId) {
-        const btn = document.getElementById(btnId);
-        
-        if (btnId === 'btnA') {
-            isActiveA = !isActiveA;
-            // クラス 'active' を付け外しして見た目を変える
-            if (isActiveA) btn.classList.add('active');
-            else btn.classList.remove('active');
-        } else if (btnId === 'btnB') {
-            isActiveB = !isActiveB;
-            if (isActiveB) btn.classList.add('active');
-            else btn.classList.remove('active');
+        // 紋章倍率
+        emb1: 1.1,  // 炎の紋章
+        emb2: 1.25, // 光の紋章
+
+        // 敵倍率
+        ene1: 1.2,  // 防御ダウン
+        ene2: 2.0,  // 弱点属性
+        ene3: 0.5   // 耐性持ち
+    };
+
+    // ボタンのON/OFF状態を管理するオブジェクト
+    // (初期状態はすべてfalse = OFF)
+    let activeStates = {
+        ab1: false, ab2: false, ab3: false, ab4: false,
+        emb1: false, emb2: false,
+        ene1: false, ene2: false, ene3: false
+    };
+
+    // ボタンをクリックした時の処理
+    function toggleButton(id) {
+        // 状態を反転 (ON <-> OFF)
+        activeStates[id] = !activeStates[id];
+
+        // 見た目の切り替え
+        const btn = document.getElementById(id);
+        if (activeStates[id]) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
         }
 
-        // 切り替え後に再計算
+        // 再計算
         calculate();
     }
 
-    // 計算を実行する関数
+    // 計算処理
     function calculate() {
-        // 1. 攻撃力の取得（数値がない場合は0）
+        // 1. 攻撃力の取得
         const attackInput = document.getElementById('attack').value;
         const attack = parseFloat(attackInput) || 0;
 
-        // 2. 倍率Aの判定
-        const multiplierA = isActiveA ? 1.3 : 1.0;
+        // 2. 倍率の計算（ベースは1.0）
+        let totalMultiplier = 1.0;
 
-        // 3. 倍率Bの判定
-        const multiplierB = isActiveB ? 3.0 : 1.0;
+        // 全てのボタンIDを確認し、ONなら倍率をかける
+        for (const [id, isActive] of Object.entries(activeStates)) {
+            if (isActive) {
+                totalMultiplier *= VALUES[id];
+            }
+        }
 
-        // 4. 倍率C（プルダウン）の取得
-        const selectC = document.getElementById('selectC');
-        const multiplierC = parseFloat(selectC.value);
+        // 3. 最終計算
+        const finalDamage = attack * totalMultiplier;
 
-        // 5. 計算実行 (攻撃力 * A * B * C)
-        const total = attack * multiplierA * multiplierB * multiplierC;
-
-        // 6. 結果の表示（小数は切り捨てて整数にする場合 Math.floor を使用）
-        // ※ゲームによって切り捨て、四捨五入が異なるため、ここでは整数に切り捨てています
-        document.getElementById('result').innerText = Math.floor(total).toLocaleString(); 
+        // 4. 結果表示（小数切り捨て）
+        document.getElementById('result').innerText = Math.floor(finalDamage).toLocaleString();
     }
     
-    // 初期表示時に一度計算
+    // 初期計算
     calculate();
 </script>
 
