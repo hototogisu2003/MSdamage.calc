@@ -121,6 +121,13 @@ function calculate() {
         if (!isNaN(val)) hontaiMultiplier = val;
     }
 
+    // 防御ダウン倍率
+    let defMultiplier = 1.0;
+    if (document.getElementById('chk_def').checked) {
+        const val = parseFloat(document.getElementById('defRate').value);
+        if (!isNaN(val)) defMultiplier = val;
+    }
+
     // 最終計算
     const finalDamage = attack 
         * gaugeMultiplier   // ゲージ
@@ -134,6 +141,7 @@ function calculate() {
         * weakMultiplier // 弱点
         * naguriMultiplier // 直殴り
         * hontaiMultiplier // 本体倍率
+        * defMultiplier // 本体倍率
         ;
 
     // 結果表示
