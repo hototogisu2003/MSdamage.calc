@@ -1,0 +1,190 @@
+/* --- 基本設定 --- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #202124;
+    color: #e8eaed;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin: 0;
+}
+
+.container {
+    background-color: #2d2e31;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    max-width: 800px;
+    width: 100%;
+}
+
+h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+    color: #8ab4f8;
+}
+
+/* --- 入力フォームデザイン --- */
+input[type="number"], select {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #5f6368;
+    background-color: #3c4043;
+    color: white;
+    box-sizing: border-box;
+    transition: opacity 0.3s;
+}
+
+input:disabled, select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #292a2d;
+}
+
+.main-input {
+    margin-bottom: 24px;
+}
+
+.main-input label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #9aa0a6;
+}
+
+/* 攻撃力とゲージを横並びにするためのクラス */
+.input-with-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* 入力欄とチェックボックスの間隔 */
+}
+
+/* --- カテゴリ枠 --- */
+.category-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #5f6368;
+    border-radius: 8px;
+    background-color: #35363a;
+}
+
+.category-title {
+    font-size: 1rem;
+    color: #8ab4f8;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #5f6368;
+    padding-bottom: 5px;
+}
+
+/* --- 4列グリッドレイアウト --- */
+.grid-4-col {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    align-items: stretch; /* 高さを揃える */
+}
+
+@media (max-width: 600px) {
+    .grid-4-col {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* --- グリッド内のアイテム --- */
+.grid-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: 100%; /* セルいっぱいに高さを確保 */
+}
+
+/* 入力欄やボタンを強制的に下揃えにする設定 */
+.grid-item > input[type="number"],
+.grid-item > select,
+.grid-item > button {
+    margin-top: auto;
+}
+
+/* 複数の入力欄をまとめて下揃えにするためのクラス */
+.grid-item > .bottom-stack {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* --- チェックボックス付きラベル --- */
+.check-label {
+    display: flex;
+    align-items: start; /* テキストが複数行になっても上揃え */
+    gap: 8px;
+    font-weight: bold;
+    color: #9aa0a6;
+    font-size: 0.85rem;
+    cursor: pointer;
+    min-height: 24px;
+    line-height: 1.4;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.2);
+    cursor: pointer;
+    margin-top: 2px;
+}
+
+/* --- トグルボタン --- */
+.toggle-btn {
+    padding: 0;
+    height: 100%;
+    min-height: 42px;
+    font-size: 0.9rem;
+    border: 2px solid #5f6368;
+    background-color: #3c4043;
+    color: #9aa0a6;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: bold;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-btn.active {
+    background-color: #8ab4f8;
+    border-color: #8ab4f8;
+    color: #202124;
+}
+
+.toggle-btn:hover {
+    opacity: 0.9;
+}
+
+/* --- 結果表示 --- */
+.result-box {
+    background-color: #171717;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 24px;
+    border: 1px solid #5f6368;
+}
+
+.result-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #9aa0a6;
+    margin-bottom: 5px;
+}
+
+.result-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #ff8a80;
+}
