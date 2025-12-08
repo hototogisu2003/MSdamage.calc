@@ -71,6 +71,23 @@ function togglewboostInputs() {
     }
 }
 
+/* -------------------------------------------------------
+   属性倍率の入力切り替え（手入力表示制御）
+------------------------------------------------------- */
+function toggleStageInput() {
+    const select = document.getElementById('stageEffectSelect');
+    const input = document.getElementById('customStageRate');
+    
+    if (select && input) {
+        if (select.value === 'custom') {
+            input.style.display = 'block'; // 表示
+            input.focus(); // カーソルを合わせる
+        } else {
+            input.style.display = 'none';  // 非表示
+        }
+        calculate(); // 切り替え時も再計算
+    }
+}
 
 /* -------------------------------------------------------
    計算メイン処理
@@ -275,11 +292,22 @@ function calculate() {
 
     // --- ステージ倍率 ---
     const stageSelect = document.getElementById('stageEffectSelect');
+    const customInput = document.getElementById('customStageRate');
     const stageCheck = document.getElementById('chk_stageSpecial');
     let stageMultiplier = 1.0;
     
-    if (stageSelect && stageCheck) {
-        const stageBase = parseFloat(stageSelect.value) || 1.0;
+if (stageSelect && stageCheck) {
+        // ★修正ポイント：customなら入力欄から、それ以外ならセレクトボックスから値を取得
+        let stageBase = 1.0;
+        
+        if (stageSelect.value === 'custom') {
+            // 手入力の場合
+            stageBase = parseFloat(customInput.value) || 1.0;
+        } else {
+            // プリセットの場合
+            stageBase = parseFloat(stageSelect.value) || 1.0;
+        }
+
         const isStageSpecial = stageCheck.checked;
         stageMultiplier = stageBase;
 
