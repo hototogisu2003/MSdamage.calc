@@ -282,6 +282,7 @@ function calculate() {
         * ab1Multiplier 
         * ab2Multiplier
         * ab3Multiplier
+        * ab4Multiplier
         * auraMultiplier // パワーオーラ
         * msMultiplier
         * warpMultiplier
