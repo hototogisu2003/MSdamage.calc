@@ -246,3 +246,17 @@ input, select, button {
     line-height: 1.2;
 }
 }
+
+#debug-timestamp {
+    position: fixed;       /* スクロールしても位置を固定 */
+    top: 5px;              /* 上から5px */
+    right: 5px;            /* 右から5px */
+    background-color: rgba(0, 0, 0, 0.7); /* 背景を半透明の黒に */
+    color: #fff;           /* 文字色を白に */
+    padding: 4px 8px;      /* 内側の余白 */
+    font-size: 11px;       /* 文字を小さく */
+    border-radius: 4px;    /* 角を丸く */
+    z-index: 9999;         /* 他の要素より手前に表示 */
+    pointer-events: none;  /* クリックを透過させる（邪魔にならないように） */
+    font-family: monospace; /* 等幅フォントで見やすく */
+}
