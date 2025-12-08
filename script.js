@@ -312,3 +312,10 @@ function calculate() {
 
 // 初期化
 calculate();
+
+// --- デバッグ用：最終更新日時を表示 ---
+// HTMLファイル自体の最終更新日時を取得して表示します
+const debugElem = document.getElementById('debug-timestamp');
+if (debugElem) {
+    debugElem.innerText = 'Last Update: ' + document.lastModified;
+}
