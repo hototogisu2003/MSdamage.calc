@@ -313,9 +313,19 @@ function calculate() {
 // 初期化
 calculate();
 
-// --- デバッグ用：最終更新日時を表示 ---
-// HTMLファイル自体の最終更新日時を取得して表示します
+// --- デバッグ用：最終更新日時を表示（yyyy-mm-dd形式） ---
 const debugElem = document.getElementById('debug-timestamp');
 if (debugElem) {
-    debugElem.innerText = 'Last Update: ' + document.lastModified;
+    const d = new Date(document.lastModified);
+    
+    // 年・月・日・時・分・秒を個別に取得してゼロ埋めする
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    const sec = String(d.getSeconds()).padStart(2, '0');
+
+    // 整形して表示
+    debugElem.innerText = `Update: ${year}-${month}-${day} ${hours}:${min}:${sec}`;
 }
