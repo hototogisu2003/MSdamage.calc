@@ -1,9 +1,9 @@
 // --- ウォールブースト倍率定義 ---
 // 1壁, 2壁, 3壁, 4壁 の順で倍率を定義
 const WALL_BOOST_DATA = {
-    "1.5": { 1: 1.12, 2: 1.25, 3: 1.37, 4: 1.5 }, // 無印
+    "1.5": { 1: 1.125, 2: 1.25, 3: 1.375, 4: 1.5 }, // 無印
     "2.0": { 1: 1.25,  2: 1.5,  3: 1.75,  4: 2.0 }, // M
-    "2.5": { 1: 1.37, 2: 1.75, 3: 2.12, 4: 2.5 }, // L
+    "2.5": { 1: 1.375, 2: 1.75, 3: 2.125, 4: 2.5 }, // L
 };
 
 // 計算された最終ダメージを保持する変数（判定画面で使用）
@@ -71,23 +71,6 @@ function togglewboostInputs() {
     }
 }
 
-/* -------------------------------------------------------
-   属性倍率の入力切り替え（手入力表示制御）
-------------------------------------------------------- */
-function toggleStageInput() {
-    const select = document.getElementById('stageEffectSelect');
-    const input = document.getElementById('customStageRate');
-    
-    if (select && input) {
-        if (select.value === 'custom') {
-            input.style.display = 'block'; // 表示
-            input.focus(); // カーソルを合わせる
-        } else {
-            input.style.display = 'none';  // 非表示
-        }
-        calculate(); // 切り替え時も再計算
-    }
-}
 
 /* -------------------------------------------------------
    計算メイン処理
@@ -292,22 +275,11 @@ function calculate() {
 
     // --- ステージ倍率 ---
     const stageSelect = document.getElementById('stageEffectSelect');
-    const customInput = document.getElementById('customStageRate');
     const stageCheck = document.getElementById('chk_stageSpecial');
     let stageMultiplier = 1.0;
     
-if (stageSelect && stageCheck) {
-        // ★修正ポイント：customなら入力欄から、それ以外ならセレクトボックスから値を取得
-        let stageBase = 1.0;
-        
-        if (stageSelect.value === 'custom') {
-            // 手入力の場合
-            stageBase = parseFloat(customInput.value) || 1.0;
-        } else {
-            // プリセットの場合
-            stageBase = parseFloat(stageSelect.value) || 1.0;
-        }
-
+    if (stageSelect && stageCheck) {
+        const stageBase = parseFloat(stageSelect.value) || 1.0;
         const isStageSpecial = stageCheck.checked;
         stageMultiplier = stageBase;
 
@@ -431,22 +403,79 @@ function checkOneshot() {
     }
 }
 
-
 /* -------------------------------------------------------
-   デバッグ用：最終更新日時を表示
+   更新履歴の表示切り替え
 ------------------------------------------------------- */
-const debugElem = document.getElementById('debug-timestamp');
-if (debugElem) {
-    const d = new Date(document.lastModified);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const hours = String(d.getHours()).padStart(2, '0');
-    const min = String(d.getMinutes()).padStart(2, '0');
-
-    // 秒を省いて表示
-    debugElem.innerText = `最終更新: ${year}-${month}-${day} ${hours}:${min}`;
+function toggleHistory() {
+    const log = document.getElementById('history-log');
+    if (log) {
+        if (log.style.display === 'none') {
+            log.style.display = 'block';
+        } else {
+            log.style.display = 'none';
+        }
+    }
 }
 
-// 初期化実行
-calculate();
+// 画面のどこかをクリックした時、ベルと履歴以外なら閉じる処理（UX向上）
+document.addEventListener('click', function(event) {
+    const log = document.getElementById('history-log');
+    const bell = document.getElementById('bell-icon');
+    
+    if (log && bell && log.style.display === 'block') {
+        // クリックされた場所が「ログの中」でも「ベル」でもなければ閉じる
+        if (!log.contains(event.target) && !bell.contains(event.target)) {
+            log.style.display = 'none';
+        }
+    }
+});
+
+/* -------------------------------------------------------
+   全入力リセット処理
+------------------------------------------------------- */
+function resetAll() {
+    // 誤操作防止の確認アラート
+    if (!confirm("入力内容をすべてリセットしますか？")) {
+        return;
+    }
+
+    // 1. テキストボックス・数値入力のクリア
+    const inputs = document.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+        input.value = "";
+    });
+
+    // 2. チェックボックスをすべて外す
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(chk => {
+        chk.checked = false;
+    });
+
+    // 3. セレクトボックスを初期値(一番上の選択肢)に戻す
+    const selects = document.querySelectorAll('select');
+    selects.forEach(sel => {
+        sel.selectedIndex = 0;
+    });
+
+    // 4. 入力欄の無効化 (disabled) 状態を復元する
+    // main-input(攻撃力欄)以外の、category-section内の入力欄を基本的に無効化します
+    const dependentInputs = document.querySelectorAll('.category-section input[type="number"], .category-section select');
+    dependentInputs.forEach(el => {
+        // "stageEffectSelect" (有利属性) だけは最初から有効なので除外
+        if (el.id !== 'stageEffectSelect') {
+            el.disabled = true;
+        }
+    });
+
+    // 5. 特殊な表示項目のリセット
+    // 手入力欄を隠す
+    const customStageInput = document.getElementById('customStageRate');
+    if (customStageInput) customStageInput.style.display = 'none';
+    
+    // 実質HP表示のリセット
+    const realHpElem = document.getElementById('displayRealHp');
+    if (realHpElem) realHpElem.innerText = "-";
+
+    // 6. 再計算して結果を0に戻す
+    calculate();
+}
