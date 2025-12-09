@@ -202,6 +202,20 @@
                         </select>
                     </div>
                 </div>
+
+                <div class="grid-item" data-mode="friend">
+                    <label class="check-label">
+                        <input type="checkbox" id="chk_friend_boost" onchange="toggleInput('friendBoostSelect', 'chk_friend_boost')">
+                        友情ブースト
+                    </label>
+                    <select id="friendBoostSelect" onchange="calculate()" disabled>
+                        <option value="1.5">無印 (x1.5)</option>
+                        <option value="2.0">M (x2.0)</option>
+                        <option value="2.5">L (x2.5)</option>
+                        <option value="3.0">EL (x3.0)</option>
+                    </select>
+                </div>
+
                 
                 <div class="grid-item">
                     <label class="check-label">
@@ -232,7 +246,7 @@
                 <div class="grid-item" data-mode="direct">
                     <label class="check-label">
                         <input type="checkbox" id="chk_ab4" onchange="calculate()">
-                        超パワー型（初撃×1.2）
+                        超パワー型（初撃x1.2）
                     </label>
                 </div>
 
@@ -244,19 +258,6 @@
                     <select id="pfieldSelect" onchange="calculate()" disabled>
                         <option value="1.5" selected>主友情 (x1.5)</option>
                         <option value="1.1">副友情[神化] (x1.1)</option>
-                    </select>
-                </div>
-
-                <div class="grid-item" data-mode="friend">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_friend_boost" onchange="toggleInput('friendBoostSelect', 'chk_friend_boost')">
-                        友情ブースト
-                    </label>
-                    <select id="friendBoostSelect" onchange="calculate()" disabled>
-                        <option value="1.5">無印 (x1.5)</option>
-                        <option value="2.0">M (x2.0)</option>
-                        <option value="2.5">L (x2.5)</option>
-                        <option value="3.0">EL (x3.0)</option>
                     </select>
                 </div>
 
