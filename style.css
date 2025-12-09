@@ -190,10 +190,9 @@ input[type="checkbox"] {
 }
 
 /* --- リセットボタン --- */
-/* --- リセットボタン --- */
 .reset-button {
-    position: fixed;       /* ★ここが重要：左上に固定 */
-    top: 15px;             /* ベルマークと同じ高さ */
+    position: absolute;      
+    top: 15px;           
     left: 15px;
     z-index: 10000;        /* 最前面 */
     
@@ -293,7 +292,7 @@ input[type="checkbox"] {
 
 /* --- ベルマーク・更新履歴 --- */
 #bell-icon {
-    position: fixed;
+    position: absolute;
     top: 15px;
     right: 15px;
     width: 40px;
