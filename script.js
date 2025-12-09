@@ -197,13 +197,13 @@ function calculate() {
         if (document.getElementById('chk_ab4').checked) totalMultiplier *= 1.2; // 超パワー型
 
         // SS倍率1
-        if (document.getElementById('chk_SS1').checked) {
+        if (document.getElementById('chk_SS').checked) {
             totalMultiplier *= (parseFloat(document.getElementById('SSRate').value) || 1.0);
         }
 
          // SS倍率1
         if (document.getElementById('chk_SS2').checked) {
-            totalMultiplier *= (parseFloat(document.getElementById('SSRate').value) || 1.0);
+            totalMultiplier *= (parseFloat(document.getElementById('SS2Rate').value) || 1.0);
         }
 
         // 直殴り倍率(敵)
