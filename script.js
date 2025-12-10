@@ -184,8 +184,8 @@ function calculate() {
         actualAttack = baseAttack + bonusAttack;
         breakdown.push({ name: "攻撃力（加撃込）", val: actualAttack.toLocaleString() });
     } else {
-        const yuugekiVal = parseFloat(document.getElementById('friendYuugekiSelect').value) || 1.0;
-        actualAttack = Math.floor(baseAttack * yuugekiVal);
+    const yuugekiVal = parseFloat(document.getElementById('friendYuugekiSelect').value) || 1.0;
+        actualAttack = Math.floor((baseAttack * yuugekiVal) + 0.00001);
         
         // 友撃の等級を取得して表示名に追加
         const yuugekiSuffix = getGradeSuffix('friendYuugekiSelect');
