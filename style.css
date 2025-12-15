@@ -83,7 +83,7 @@ h1 {
 
 /* --- サイドバーメニュー --- */
 #side-menu {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: -250px; /* 初期状態は画面外 */
     width: 250px;
@@ -106,7 +106,7 @@ h1 {
 }
 
 #menu-overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
