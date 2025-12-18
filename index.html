@@ -31,10 +31,6 @@
     <div class="history-title">更新履歴</div>
     <ul class="history-list">
          <li>
-            <span class="date">2025/12/18</span>
-            <span class="content"> 敵の複数判定への攻撃を計算する機能を追加しました。</span>
-         </li>
-         <li>
             <span class="date">2025/12/15</span>
             <span class="content">　説明書・お問い合わせフォームを追加しました。</span>
          </li>
@@ -457,7 +453,7 @@
                             
                             <label class="check-label" style="background-color: #e8f5e9; padding: 5px 10px; border-radius: 5px; border: 1px solid #8bc34a;">
                                 <input type="checkbox" id="chk_multi_mode" onchange="toggleMultiMode()">
-                                複数判定(全体攻撃・追撃)
+                                複数判定
                             </label>
 
                             <div id="multi-inputs" style="display: none; align-items: center; gap: 15px;">
@@ -546,24 +542,28 @@
             <h3 class="category-title">ステージ倍率</h3>
             <div class="grid-4-col">
                 <div class="grid-item">
-                    <label for="stageEffectSelect">有利属性倍率</label>
-                    <select id="stageEffectSelect" onchange="toggleStageInput()">
-                        <option value="1.0" selected>なし (x1.0)</option>
-                        <option value="1.33">通常(x1.33)</option>
-                        <option value="1.5016">属性効果UP (x1.5016)</option>
-                        <option value="1.99">属性効果超UP (x1.99)</option>
-                        <option value="2.9998">属性効果超絶UP (x2.9998)</option>
-                        <option value="custom">エレメント系(個別入力)</option> 
-                    </select>
-                    <input type="number" id="customStageRate" placeholder="倍率 (例: 5.0)" step="0.0001" oninput="calculate()" style="display: none; margin-top: 5px; border: 2px solid #8bc34a;">
+                    <label>属性倍率</label>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        
+                        <select id="stageTypeSelect" onchange="updateStageUI()">
+                            <option value="advantage" selected>有利</option>
+                            <option value="none">なし (等倍)</option>
+                            <option value="disadvantage">不利</option>
+                            </select>
 
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc;">
-                        <label class="check-label">
-                            <input type="checkbox" id="chk_stageSpecial" onchange="calculate()">
-                            超バランス型
-                        </label>
-                        <div style="font-size: 0.85rem; color: #555; margin-top: 5px;">
-                            倍率: x<span id="stageRealRate">1.00</span>
+                        <select id="stageMagnitudeSelect" onchange="handleStageMagnitudeChange()">
+                            </select>
+
+                        <input type="number" id="customStageRate" placeholder="倍率" step="0.0001" oninput="calculate()" style="display: none; border: 2px solid #8bc34a;">
+
+                        <div id="group-super-balance" style="margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ccc;">
+                            <label class="check-label">
+                                <input type="checkbox" id="chk_stageSpecial" onchange="calculate()">
+                                超バランス型
+                            </label>
+                            <div style="font-size: 0.85rem; color: #555; margin-top: 2px;">
+                                倍率: x<span id="stageRealRate">1.00</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -658,7 +658,6 @@
                     <li>攻撃対象とする敵のデータを入力してください。
                         <div class="manual-note">※本体倍率や直殴り倍率等は「(クエスト名) 敵データ」などTwitterで検索すると情報を得ることができます。</div>
                     </li>
-                    <li>全体攻撃など敵の複数判定を拾う攻撃では、弱点数と弱点判定数を入力すると全て合算して計算されます。 </li>                    
                     <li>ステージにかかる属性倍率およびギミック倍率を入力してください。</li>
                 </ol>
 
