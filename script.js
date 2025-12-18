@@ -1,717 +1,683 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ダメージ計算機MS</title>
+/* -------------------------------------------------------
+   サイドメニュー & モード切り替え
+------------------------------------------------------- */
+function toggleMenu() {
+    const menu = document.getElementById('side-menu');
+    const overlay = document.getElementById('menu-overlay');
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    menu.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
 
-    <meta property="og:site_name" content="ダメージ計算機MS">
-    <meta property="og:title" content="ダメージ計算機MS">
-    <meta property="og:description" content="モンスターストライク(モンスト)のダメージ計算、ワンパンライン判定ができるツールです。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://hototogisu2003.github.io/MSdamage.calc/">
+function switchMainMode(mode) {
+    const appContainer = document.getElementById('app-container');
+    const manualContainer = document.getElementById('manual-container');
+    const contactContainer = document.getElementById('contact-container'); // ★追加
+    const footer = document.getElementById('footer-result');
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "ダメージ計算機MS",
-      "url": "https://hototogisu2003.github.io/MSdamage.calc/"
+    // メニューを閉じる
+    toggleMenu();
+
+    // 一旦すべて非表示にする
+    appContainer.style.display = 'none';
+    manualContainer.style.display = 'none';
+    if(contactContainer) contactContainer.style.display = 'none';
+    if(footer) footer.style.display = 'none'; // フッターも一旦隠す
+
+    // 選ばれたモードだけ表示する
+    if (mode === 'app') {
+        appContainer.style.display = 'block';
+        if(footer) footer.style.display = 'flex'; // 計算機モードのみフッター表示
+    } else if (mode === 'manual') {
+        manualContainer.style.display = 'block';
+    } else if (mode === 'contact') {
+        // ★追加: お問い合わせモード
+        if(contactContainer) contactContainer.style.display = 'block';
     }
-    </script>
-    </head>
-<body>
+}
 
-<div id="history-log" style="display: none;">
-    <div class="history-title">更新履歴</div>
-    <ul class="history-list">
-         <li>
-            <span class="date">2025/12/18</span>
-            <span class="content">　敵の複数判定をまとめて計算する機能を追加しました。</span>
-         </li>
-         <li>
-            <span class="date">2025/12/15</span>
-            <span class="content">　説明書・お問い合わせフォームを追加しました。</span>
-         </li>
-         <li>
-            <span class="date">2025/12/15</span>
-            <span class="content">　9加撃L、9加撃EL、モンスポットによる加撃量の加算をチェックボックスから選択できる機能を実装しました。</span>
-         </li>
-         <li>
-            <span class="date">2025/12/10</span>
-            <span class="content">ダメージ計算結果をフッター表示に変更しました。詳細をタップすると倍率内訳を確認できます。</span>
-        </li>
-         <li>
-            <span class="date">2025/12/09</span>
-            <span class="content">SS倍率の枠を増やしました。自強化+弱点特攻のような2種の乗算が発生するSSに対して効果的です。</span>
-        </li>
-        <li>
-            <span class="date">2025/12/09</span>
-            <span class="content">直殴り/友情コンボの切り替え機能を実装しました。</span>
-        </li>
-        <li>
-            <span class="date">2025/12/09</span>
-            <span class="content">入力リセットボタンを追加しました。</span>
-        </li>
-    </ul>
-    <div style="text-align: center; margin-top: 10px;">
-        <button onclick="toggleHistory()" style="padding: 4px 10px; font-size: 12px;">閉じる</button>
-    </div>
-</div>
+// --- ウォールブースト倍率定義 ---
+const WALL_BOOST_DATA = {
+    "1.5": { 1: 1.12, 2: 1.25, 3: 1.37, 4: 1.5 },
+    "2.0": { 1: 1.25,  2: 1.5,  3: 1.75,  4: 2.0 },
+    "2.5": { 1: 1.37, 2: 1.75, 3: 2.12, 4: 2.5 }
+};
 
-<div class="container">
-    <div id="menu-overlay" onclick="toggleMenu()"></div>
-        <div id="side-menu">
-            <div class="menu-close" onclick="toggleMenu()">×</div>
-            <ul class="menu-list">
-                <li onclick="switchMainMode('app')">計算ツール</li>
-                <li onclick="switchMainMode('manual')">説明書</li>
-                <li onclick="switchMainMode('contact')">お問い合わせ</li>
-            </ul>
-        </div>
-<div class="header-row">
-        <div class="header-left">
-            <div class="hamburger-menu" onclick="toggleMenu()">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
-                    <path d="M0 0h24v24H0V0z" fill="none"/>
-                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-                </svg>
-            </div>
-            <h1>ダメージ計算機MS</h1>
-        </div>
-        
-        <div class="header-actions">
-            <button class="reset-button" onclick="resetAll()" title="入力をリセット">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ffffff">
-                    <path d="M0 0h24v24H0V0z" fill="none"/>
-                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                </svg>
-            </button>
+// 現在の攻撃モード ('direct' or 'friend')
+let currentAttackMode = 'direct';
+// 最終ダメージ
+let currentFinalDamage = 0;
 
-            <div id="bell-icon" onclick="toggleHistory()" title="更新履歴">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ffffff">
-                    <path d="M0 0h24v24H0V0z" fill="none"/>
-                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
-                </svg>
-            </div>
-        </div>
-</div>
+/* -------------------------------------------------------
+   攻撃モード切り替え (直殴り <-> 友情)
+------------------------------------------------------- */
+function switchAttackMode() {
+    const radios = document.getElementsByName('attackMode');
+    for (const radio of radios) {
+        if (radio.checked) {
+            currentAttackMode = radio.value;
+            break;
+        }
+    }
+
+    // 表示切り替え
+    const items = document.querySelectorAll('.grid-item');
+    items.forEach(item => {
+        const mode = item.getAttribute('data-mode');
+        if (!mode) {
+            item.style.display = 'flex'; // 共通
+        } else if (mode === currentAttackMode) {
+            item.style.display = 'flex'; // 専用
+        } else {
+            item.style.display = 'none'; // 非表示
+        }
+    });
+
+    // ラベル等の書き換え
+    const labelBase = document.getElementById('label-base-power');
+    const labelAtk = document.getElementById('label-atk-val');
+    const groupBonus = document.getElementById('group-bonus-atk'); // 加撃グループ
+    const groupYuugeki = document.getElementById('group-yuugeki'); // 友撃グループ
+    const groupGauge = document.getElementById('group-gauge');
+
+    if (currentAttackMode === 'friend') {
+        labelAtk.innerText = "友情威力";
+        groupBonus.style.display = 'none';   // 加撃を隠す
+        groupYuugeki.style.display = 'flex'; // 友撃を表示
+        groupGauge.style.display = 'none';   // ゲージを隠す
+    } else {
+        labelAtk.innerText = "攻撃力";
+        groupBonus.style.display = 'flex';   // 加撃を表示
+        groupYuugeki.style.display = 'none'; // 友撃を隠す
+        groupGauge.style.display = 'flex';   // ゲージを表示
+    }
+
+    calculate();
+}
+
+/* -------------------------------------------------------
+   タブ切り替え処理
+------------------------------------------------------- */
+function switchTab(mode) {
+    const viewCalc = document.getElementById('view-calc');
+    const viewVerify = document.getElementById('view-verify');
+    const btnCalc = document.getElementById('btn-tab-calc');
+    const btnVerify = document.getElementById('btn-tab-verify');
+
+    if (mode === 'calc') {
+        viewCalc.style.display = 'block';
+        viewVerify.style.display = 'none';
+        btnCalc.classList.add('active');
+        btnVerify.classList.remove('active');
+    } else {
+        viewCalc.style.display = 'none';
+        viewVerify.style.display = 'block';
+        btnCalc.classList.remove('active');
+        btnVerify.classList.add('active');
+        checkOneshot();
+    }
+}
+
+/* -------------------------------------------------------
+   複数判定モードの表示切り替え
+------------------------------------------------------- */
+function toggleMultiMode() {
+    const isMulti = document.getElementById('chk_multi_mode').checked;
+    const inputs = document.getElementById('multi-inputs');
+    if (inputs) {
+        inputs.style.display = isMulti ? 'flex' : 'none';
+    }
+    calculate(); // 再計算
+}
+
+/* -------------------------------------------------------
+   入力欄の有効/無効を切り替える関数
+------------------------------------------------------- */
+function toggleInput(inputId, checkboxId) {
+    const input = document.getElementById(inputId);
+    const checkbox = document.getElementById(checkboxId);
+    if (input && checkbox) {
+        input.disabled = !checkbox.checked;
+        calculate(); 
+        if (typeof checkOneshot === 'function') checkOneshot();
+    }
+}
+
+/* -------------------------------------------------------
+   有利属性倍率の手入力欄切り替え
+------------------------------------------------------- */
+function toggleStageInput() {
+    const select = document.getElementById('stageEffectSelect');
+    const input = document.getElementById('customStageRate');
+    if (select && input) {
+        if (select.value === 'custom') {
+            input.style.display = 'block';
+            input.focus();
+        } else {
+            input.style.display = 'none';
+        }
+        calculate();
+    }
+}
+
+/* -------------------------------------------------------
+   ウォールブースト専用
+------------------------------------------------------- */
+function togglewboostInputs() {
+    const checkbox = document.getElementById('chk_wboost');
+    const grade = document.getElementById('wboostGrade');
+    const val = document.getElementById('wboostVal');
+    if (checkbox && grade && val) {
+        const isDisabled = !checkbox.checked;
+        grade.disabled = isDisabled;
+        val.disabled = isDisabled;
+        calculate();
+    }
+}
+
+/* -------------------------------------------------------
+   等級名の取得
+   セレクトボックスのテキストから "M" "L" 等を抽出する
+------------------------------------------------------- */
+function getGradeSuffix(selectId) {
+    const el = document.getElementById(selectId);
+    if (!el) return "";
     
-<div id="app-container">
-    <div class="tab-container">
-        <button id="btn-tab-calc" class="tab-button active" onclick="switchTab('calc')">計算モード</button>
-        <button id="btn-tab-verify" class="tab-button" onclick="switchTab('verify')">ワンパン判定</button>
-    </div>
+    // 現在選択されているオプションのテキストを取得 (例: "M (x2.0)")
+    const text = el.options[el.selectedIndex].text;
+    
+    // スペースで区切って最初の部分を取得 ("M", "L", "無印" など)
+    const grade = text.split(' ')[0];
+    
+    // "無印", "なし", "主友情" の場合は何も返さない
+    if (grade.includes("無印") || grade.includes("なし") || grade.includes("主友情")) {
+        return "";
+    }
+    
+    // それ以外ならスペース＋等級名を返す (例: " M")
+    return " " + grade;
+}
 
-<div id="view-calc">
+/* -------------------------------------------------------
+   フッター詳細の開閉
+------------------------------------------------------- */
+function toggleResultDetails() {
+    const details = document.getElementById('result-details');
+    const icon = document.getElementById('detail-toggle-icon');
+    const box = document.getElementById('footer-result');
+
+    if (details.style.display === 'none') {
+        details.style.display = 'block';
+        icon.innerText = '(▼ 閉じる)';
+        box.classList.add('open');
+    } else {
+        details.style.display = 'none';
+        icon.innerText = '(▲ 詳細)';
+        box.classList.remove('open');
+    }
+}
+
+/* -------------------------------------------------------
+   ★新規追加：加撃プリセットの反映
+   チェックボックスの状態に応じて入力欄の数値を増減させる
+------------------------------------------------------- */
+function updateBonus(amount, checkbox) {
+    const input = document.getElementById('attackBonus');
+    // 現在の入力値を取得（空なら0）
+    let currentVal = parseInt(input.value) || 0;
+
+    if (checkbox.checked) {
+        currentVal += amount; // チェックONなら加算
+    } else {
+        currentVal -= amount; // チェックOFFなら減算
+    }
+
+    // 計算結果を入力欄に反映
+    input.value = currentVal;
+    
+    // 全体の再計算を実行
+    calculate();
+}
+
+/* -------------------------------------------------------
+   計算メイン処理 (詳細ログ作成機能付きに書き換え)
+------------------------------------------------------- */
+function calculate() {
+    let breakdown = [];
+
+    // --- 攻撃力(威力)取得 ---
+    const attackElem = document.getElementById('attack');
+    let baseAttack = parseFloat(attackElem.value) || 0;
+    let actualAttack = 0;
+
+    // === 直殴りモード ===
+    if (currentAttackMode === 'direct') {
+        // 直殴り: ベース + 加撃 (入力欄の値をそのまま使う)
+        const bonusElem = document.getElementById('attackBonus');
+        const manualBonus = parseFloat(bonusElem.value) || 0;
         
-        <div class="mode-switch-container">
-            <label class="mode-switch-label">
-                <input type="radio" name="attackMode" value="direct" checked onchange="switchAttackMode()">
-                <span class="mode-switch-text">直殴り</span>
-            </label>
-            <label class="mode-switch-label">
-                <input type="radio" name="attackMode" value="friend" onchange="switchAttackMode()">
-                <span class="mode-switch-text">友情コンボ</span>
-            </label>
-        </div>
+        /* ★削除・変更点：
+           以前ここにあった「presetBonus」の加算処理は削除しました。
+           チェックボックスの値は「manualBonus（入力欄）」に含まれるようになったためです。
+        */
 
-<div class="main-input">
-            <div style="display: flex; flex-direction: column; gap: 5px;">
-                <label id="label-base-power"></label>
-                <div style="display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="font-size: 0.8rem;" id="label-atk-val">攻撃力</span>
-                        <input type="number" id="attack" oninput="calculate()" style="width: 120px;">
-                    </div>
-                        
-                    <div id="group-bonus-atk" style="display: flex; align-items: flex-start; gap: 10px;">
-                        
-                        <div style="display: flex; flex-direction: column;">
-                            <span style="font-size: 0.8rem;">加撃量</span>
-                            <input type="number" id="attackBonus" oninput="calculate()" style="width: 120px;">
-                            
-                            <div class="preset-group">
-                                <label class="check-label">
-                                    <input type="checkbox" id="chk_9L" onchange="updateBonus(14000, this)">
-                                    9加撃L (+14,000)
-                                </label>
-                                <label class="check-label">
-                                    <input type="checkbox" id="chk_9EL" onchange="updateBonus(15400, this)">
-                                    9加撃EL (+15,400)
-                                </label>
-                                <label class="check-label">
-                                    <input type="checkbox" id="chk_spot" onchange="updateBonus(2000, this)">
-                                    スポット (+2,000)
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="group-yuugeki" style="display: none; align-items: center; gap: 10px;">
-                        <span style="font-weight: bold; padding-top: 15px;">×</span>
-                        <div style="display: flex; flex-direction: column;">
-                            <span style="font-size: 0.8rem;">熱き友撃</span>
-                            <select id="friendYuugekiSelect" onchange="calculate()" style="width: 120px; padding: 8px;">
-                                <option value="1.0">なし </option>
-                                <option value="1.25">L (x1.25)</option>
-                                <option value="1.275">EL (x1.275)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    </div>
-
-                <div class="input-with-checkbox" id="group-gauge" style="margin-top: 10px;">
-                    <label class="check-label" style="margin-bottom: 0; white-space: nowrap;">
-                        <input type="checkbox" id="chk_gauge" onchange="calculate()">
-                        ゲージ成功 (x1.2)
-                    </label>
-                </div>
-            </div>
-</div>
-
-        <div class="category-section">
-            <h3 class="category-title">キャラクター倍率</h3>
-            
-            <div class="grid-4-col">
-
-                <div class="grid-item" data-mode="friend">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_friendhalf" onchange="calculate()">
-                        誘発 (x0.5)
-                    </label>
-                </div>
-                
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_ab1" onchange="calculate()">
-                        超ADW (x1.3)
-                    </label>
-                </div>
-                
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_warp" onchange="toggleInput('warpCount', 'chk_warp')">
-                        超AW
-                    </label>
-                    <input type="number" id="warpCount" placeholder="ワープ数を入力" oninput="calculate()" disabled>
-                </div>
-
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_ms" onchange="toggleInput('msSelect', 'chk_ms')">
-                        マインスイーパー
-                    </label>
-                    <select id="msSelect" onchange="calculate()" disabled>
-                        <option value="1.5" selected>無印 (x1.5)</option>
-                        <option value="2.0">M (x2.0)</option>
-                        <option value="2.5">L (x2.5)</option>
-                        <option value="3.0">EL (x3.0)</option>
-                    </select>
-                </div>
-
-                 <div class="grid-item" data-mode="friend">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_friend_boost" onchange="toggleInput('friendBoostSelect', 'chk_friend_boost')">
-                        友情ブースト
-                    </label>
-                    <select id="friendBoostSelect" onchange="calculate()" disabled>
-                        <option value="1.5">無印 (x1.5)</option>
-                        <option value="2.0">M (x2.0)</option>
-                        <option value="2.5">L (x2.5)</option>
-                        <option value="3.0">EL (x3.0)</option>
-                    </select>
-                </div>
-
-
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_soko" onchange="toggleInput('sokoSelect', 'chk_soko')">
-                        底力
-                    </label>
-                    <select id="sokoSelect" onchange="calculate()" disabled>
-                        <option value="1.5" selected>無印 (x1.5)</option>
-                        <option value="2.0">M (x2.0)</option>
-                        <option value="2.5">L (x2.5)</option>
-                        <option value="3.0">EL (x3.0)</option>
-                    </select>
-                </div>
-
-                    <div class="grid-item" data-mode="friend">
-                        <label class="check-label">
-                        <input type="checkbox" id="chk_friendsoko" onchange="toggleInput('friendsokoSelect', 'chk_friendsoko')">
-                        友情底力
-                    </label>
-                    <select id="sokoSelect" onchange="calculate()" disabled>
-                        <option value="1.5" selected>無印 (x1.5)</option>
-                        <option value="2.0">M (x2.0)</option>
-                        <option value="2.5">L (x2.5)</option>
-                        <option value="3.0">EL (x3.0)</option>
-                    </select>
-                </div>
-
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_aura" onchange="toggleInput('auraSelect', 'chk_aura')">
-                        パワーオーラ
-                    </label>
-                    <select id="auraSelect" onchange="calculate()" disabled>
-                        <option value="1.5" selected>無印 (x1.5)</option>
-                        <option value="2.0">M (x2.0)</option>
-                    </select>
-                </div>
-
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_wboost" onchange="togglewboostInputs()">
-                        ウォールブースト
-                    </label>
-                    <div class="bottom-stack">
-                        <select id="wboostGrade" onchange="calculate()" disabled>
-                            <option value="1.5" selected>無印 (×1.5)</option>
-                            <option value="2.0">M (×2.0)</option>
-                            <option value="2.5">L (×2.5)</option>
-                        </select>
-                        <select id="wboostVal" onchange="calculate()" disabled>
-                            <option value="1" selected>1壁</option>
-                            <option value="2">2壁</option>
-                            <option value="3">3壁</option>
-                            <option value="4">4壁</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_hiyoko" onchange="calculate()">
-                        ヒヨコ状態 (x1/3)
-                    </label>
-                </div>
-                
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_mboost" onchange="toggleInput('mboostSelect', 'chk_mboost')">
-                        魔法陣ブースト
-                    </label>
-                    <select id="mboostSelect" onchange="calculate()" disabled>
-                        <option value="1.5" selected>無印 (x1.5)</option>
-                        <option value="2.0">M (x2.0)</option>
-                        <option value="2.5">L (x2.5)</option>
-                    </select>
-                </div>
-
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_ab2" onchange="calculate()">
-                        渾身 (x3.0)
-                    </label>
-                </div>
-
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_ab3" onchange="calculate()">
-                        クリティカル (x7.5)
-                    </label>
-                </div>
-
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_ab4" onchange="calculate()">
-                        超パワー型（初撃x1.2）
-                    </label>
-                </div>
-
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_pfield" onchange="toggleInput('pfieldSelect', 'chk_pfield')">
-                        パワーフィールド
-                    </label>
-                    <select id="pfieldSelect" onchange="calculate()" disabled>
-                        <option value="1.5" selected>主友情 (x1.5)</option>
-                        <option value="1.1">副友情[神化] (x1.1)</option>
-                    </select>
-                </div>
-
-                    <div class="grid-item" data-mode="friend">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_ffield" onchange="calculate()">
-                        友情フィールド (x1.5)
-                    </label>
-                </div>
-                
-
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_weak_killer" onchange="toggleInput('weak_killerRate', 'chk_weak_killer')">
-                        弱点キラー倍率
-                    </label>
-                    <input type="number" id="weak_killerRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-                
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_killer" onchange="toggleInput('killerRate', 'chk_killer')">
-                        その他キラー倍率
-                    </label>
-                    <input type="number" id="killerRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_buff" onchange="toggleInput('buffRate', 'chk_buff')">
-                        バフ倍率
-                    </label>
-                    <input type="number" id="buffRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-
-                <div class="grid-item" data-mode="friend">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_friendbuff" onchange="toggleInput('friendbuffRate', 'chk_friendbuff')">
-                        友情バフ倍率
-                    </label>
-                    <input type="number" id="friendbuffRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-                
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_guardian" onchange="toggleInput('guardianRate', 'chk_guardian')">
-                        守護獣倍率
-                    </label>
-                    <input type="number" id="guardianRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_SS" onchange="toggleInput('SSRate', 'chk_SS')">
-                        SS倍率1
-                    </label>
-                    <input type="number" id="SSRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_SS2" onchange="toggleInput('SS2Rate', 'chk_SS2')">
-                        SS倍率2
-                    </label>
-                    <input type="number" id="SS2Rate" step="0.01" oninput="calculate()" disabled>
-                </div>
-
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_other" onchange="toggleInput('otherRate', 'chk_other')">
-                        その他倍率
-                    </label>
-                    <input type="number" id="otherRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-            </div>
-        </div>
-
-        <div class="category-section">
-            <h3 class="category-title">紋章</h3>
-            <div class="grid-4-col">
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_emb1" onchange="calculate()">
-                        対属性 (x1.25)
-                    </label>
-                </div>
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_emb2" onchange="calculate()">
-                        対弱 (x1.10)
-                    </label>
-                </div>
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_emb3" onchange="calculate()">
-                        対将/対兵 (x1.10)
-                    </label>
-                </div>
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_emb4" onchange="calculate()">
-                        守護獣加勢 (x1.08)
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <div class="category-section">
-            <h3 class="category-title">敵倍率</h3>
-        <div class="grid-4-col">
-                    
-                    <div class="grid-item" style="grid-column: 1 / -1;"> <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
-                            
-                            <label class="check-label" style="background-color: #e8f5e9; padding: 5px 10px; border-radius: 5px; border: 1px solid #8bc34a;">
-                                <input type="checkbox" id="chk_multi_mode" onchange="toggleMultiMode()">
-                                複数判定モード（全体攻撃）
-                            </label>
-
-                            <div id="multi-inputs" style="display: none; align-items: center; gap: 15px;">
-                                <div style="display: flex; align-items: center; gap: 5px;">
-                                    <span style="font-size: 12px; font-weight: bold;">弱点数:</span>
-                                    <input type="number" id="val_weak_cnt" value="1" oninput="calculate()" style="width: 60px;">
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 5px;">
-                                    <span style="font-size: 12px; font-weight: bold;">弱点判定数:</span>
-                                    <input type="number" id="val_judge_cnt" value="0" oninput="calculate()" style="width: 60px;">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="grid-item">
-                        <label class="check-label">
-                            <input type="checkbox" id="chk_weak" onchange="toggleInput('weakRate', 'chk_weak')">
-                            弱点倍率
-                        </label>
-                        <input type="number" id="weakRate" value="3" step="0.01" oninput="calculate()" disabled>
-                    </div>
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_weakpoint" onchange="toggleInput('weakpointRate', 'chk_weakpoint')">
-                        弱点判定倍率
-                    </label>
-                    <input type="number" id="weakpointRate" value="1" step="0.01" oninput="calculate()" disabled>
-                </div>
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_hontai" onchange="toggleInput('hontaiRate', 'chk_hontai')">
-                        本体倍率
-                    </label>
-                    <input type="number" id="hontaiRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_naguri" onchange="toggleInput('naguriRate', 'chk_naguri')">
-                        直殴り倍率
-                    </label>
-                    <input type="number" id="naguriRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-                <div class="grid-item" data-mode="friend">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_yujo" onchange="toggleInput('yujoRate', 'chk_yujo')">
-                        友情倍率
-                    </label>
-                    <input type="number" id="yujoRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_def" onchange="toggleInput('defRate', 'chk_def')">
-                        防御ダウン倍率
-                    </label>
-                    <input type="number" id="defRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_angry" onchange="toggleInput('angrySelect', 'chk_angry')">
-                        怒り倍率
-                    </label>
-                    <select id="angrySelect" onchange="calculate()" disabled>
-                        <option value="1.05" selected>小 (x1.05)</option>
-                        <option value="1.10">中 (x1.10)</option>
-                        <option value="1.15">大 (x1.15)</option>
-                    </select>
-                </div>
-                <div class="grid-item" data-mode="direct">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_mine" onchange="toggleInput('mineRate', 'chk_mine')">
-                        地雷倍率
-                    </label>
-                    <input type="number" id="mineRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_special" onchange="toggleInput('specialRate', 'chk_special')">
-                        特殊倍率
-                    </label>
-                    <input type="number" id="specialRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-            </div>
-        </div>
-
-        <div class="category-section">
-            <h3 class="category-title">ステージ倍率</h3>
-            <div class="grid-4-col">
-                <div class="grid-item">
-                    <label for="stageEffectSelect">有利属性倍率</label>
-                    <select id="stageEffectSelect" onchange="toggleStageInput()">
-                        <option value="1.0" selected>なし (x1.0)</option>
-                        <option value="1.33">通常(x1.33)</option>
-                        <option value="1.5016">属性効果UP (x1.5016)</option>
-                        <option value="1.99">属性効果超UP (x1.99)</option>
-                        <option value="2.9998">属性効果超絶UP (x2.9998)</option>
-                        <option value="custom">エレメント系(個別入力)</option> 
-                    </select>
-                    <input type="number" id="customStageRate" placeholder="倍率 (例: 5.0)" step="0.0001" oninput="calculate()" style="display: none; margin-top: 5px; border: 2px solid #8bc34a;">
-
-                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc;">
-                        <label class="check-label">
-                            <input type="checkbox" id="chk_stageSpecial" onchange="calculate()">
-                            超バランス型
-                        </label>
-                        <div style="font-size: 0.85rem; color: #555; margin-top: 5px;">
-                            倍率: x<span id="stageRealRate">1.00</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="grid-item">
-                    <label class="check-label">
-                        <input type="checkbox" id="chk_gimmick" onchange="toggleInput('gimmickRate', 'chk_gimmick')">
-                        ギミック倍率
-                    </label>
-                    <input type="number" id="gimmickRate" step="0.01" oninput="calculate()" disabled>
-                </div>
-            </div>
-        </div>
+        // 合計を算出
+        actualAttack = baseAttack + manualBonus;
         
-    <div class="result-box" id="footer-result" onclick="toggleResultDetails()">
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-            <div style="display: flex; align-items: center; gap: 5px;">
-                <span class="result-label">最終ダメージ</span>
-                <span id="detail-toggle-icon" style="font-size: 12px; color: #666;">(▲ 詳細)</span>
-            </div>
-            <span id="result" class="result-value">0</span>
-        </div>
+        // ログ記録
+        breakdown.push({ name: "攻撃力", val: baseAttack.toLocaleString() });
+        // 内訳表示もシンプルに入力欄の値のみを表示
+        if (manualBonus > 0) breakdown.push({ name: "加撃", val: "+" + manualBonus.toLocaleString() });
+    }
 
-        <div id="result-details" style="display: none;">
-            <div class="detail-header">倍率内訳</div>
-            <ul id="detail-list">
-                </ul>
-        </div>
-    </div>
-    </div> <div id="view-verify" style="display: none;">
-        <div class="category-section">
-            <h3 class="category-title">敵ステータス入力</h3>
+
+    
+    else {
+        const yuugekiVal = parseFloat(document.getElementById('friendYuugekiSelect').value) || 1.0;
+        actualAttack = Math.floor(baseAttack * yuugekiVal);
+        
+        // 友撃の等級を取得して表示名に追加
+        const yuugekiSuffix = getGradeSuffix('friendYuugekiSelect');
+        breakdown.push({ name: `友情コンボ威力 (×友撃${yuugekiSuffix})`, val: actualAttack.toLocaleString() });
+    }
+
+   // モード判定
+    const isMultiMode = document.getElementById('chk_multi_mode') && document.getElementById('chk_multi_mode').checked;
+
+    let totalMultiplier = 1.0; // 共通倍率（全体にかかる）
+    
+    // 部位ごとの個別倍率（MultiMode用）
+    let rate_weak_killer = 1.0; // 弱点キラー
+    let rate_vs_weak = 1.0;     // 紋章・対弱
+    let rate_weak = 1.0;        // 弱点倍率
+    let rate_weakpoint = 1.0;       // 弱点判定倍率
+    let rate_body = 1.0;        // 本体倍率
+
+    // ヘルパー関数
+    const apply = (name, rate) => {
+        if (rate !== 1.0 && rate !== 0) {
+            totalMultiplier *= rate;
+            breakdown.push({ name: name, val: "x" + Math.round(rate * 10000) / 10000 });
+        }
+    };
+
+    // === 直殴りモード ===
+    if (currentAttackMode === 'direct') {
+        const gaugeElem = document.getElementById('chk_gauge');
+        if (gaugeElem && gaugeElem.checked) apply("ゲージ", 1.2);
+
+        if (document.getElementById('chk_ab1').checked) apply("超ADW", 1.3);
+        
+        if (document.getElementById('chk_warp').checked) {
+            const count = parseFloat(document.getElementById('warpCount').value) || 0;
+            apply(`超AW (${count}個)`, 1 + (count * 0.05));
+        }
+
+        if (document.getElementById('chk_ms').checked) {
+            apply("マインスイーパー" + getGradeSuffix('msSelect'), parseFloat(document.getElementById('msSelect').value) || 1.0);
+        }
+
+        if (document.getElementById('chk_soko').checked) {
+            apply("底力" + getGradeSuffix('sokoSelect'), parseFloat(document.getElementById('sokoSelect').value) || 1.0);
+        }
+
+        if (document.getElementById('chk_wboost').checked) {
+            const gradeKey = document.getElementById('wboostGrade').value;
+            const valKey = document.getElementById('wboostVal').value;
+            // 等級名を取得
+            const gradeSuffix = getGradeSuffix('wboostGrade');
             
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-weight:bold; color:#555;">現在の計算ダメージ</p>
-                <div style="font-size: 24px; font-weight: bold;">
-                    <span id="verifyDamageDisplay">0</span>
-                </div>
-            </div>
+            if (WALL_BOOST_DATA[gradeKey] && WALL_BOOST_DATA[gradeKey][valKey]) {
+                apply(`ウォールブースト${gradeSuffix}(${valKey}壁)`, WALL_BOOST_DATA[gradeKey][valKey]);
+            }
+        }
 
-            <div class="main-input" style="text-align: center;">
-                <label for="enemyHp">敵のHP (最大値)</label>
-                <input type="number" id="enemyHp" placeholder="敵のHPを入力" oninput="checkOneshot()" style="font-size: 18px; padding: 10px; width: 80%; max-width: 300px;">
-                
-                <div style="margin-top: 15px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 5px; background: #f9f9f9; padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px;">
-                        <label class="check-label" style="margin: 0; white-space: nowrap;">
-                            <input type="checkbox" id="chk_enableAB" onchange="toggleInput('sel_reduceAB', 'chk_enableAB')">
-                            将命/兵命削り
-                        </label>
-                        <select id="sel_reduceAB" onchange="checkOneshot()" disabled style="margin-left: 5px; padding: 4px; border-radius: 4px; border: 1px solid #ccc;">
-                            <option value="0.16">L (-16%)</option>
-                            <option value="0.17">EL (-17%)</option>
-                        </select>
-                    </div>
-                    <div style="display: flex; align-items: center; background: #f9f9f9; padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px;">
-                        <label class="check-label" style="margin: 0; white-space: nowrap;">
-                            <input type="checkbox" id="chk_reduceC" onchange="checkOneshot()">
-                            10%削り (-10%)
-                        </label>
-                    </div>
-                </div>
+        if (document.getElementById('chk_mboost').checked) {
+            apply("魔法陣ブースト" + getGradeSuffix('mboostSelect'), parseFloat(document.getElementById('mboostSelect').value) || 1.0);
+        }
 
-                <div style="margin-top: 15px; font-weight: bold; color: #333;">
-                    削り後HP: <span id="displayRealHp" style="font-size: 1.2em; color: #d32f2f;">-</span>
-                </div>
-            </div>
+        if (document.getElementById('chk_ab2').checked) apply("渾身", 3.0);
+        if (document.getElementById('chk_ab3').checked) apply("クリティカル", 7.5);
+        if (document.getElementById('chk_ab4').checked) apply("超パワー型(初撃)", 1.2);
 
-            <div id="verify-result-box" class="result-box" style="margin-top: 20px; background-color: #fafafa; border-color: #ccc;">
-                <span id="judge-text" class="result-value" style="font-size: 24px;">HPを入力してください</span>
-            </div>
-        </div>
-    </div></div> 
-<div id="manual-container" style="display: none;">
-        <div class="category-section">
-            <h3 class="category-title">説明書</h3>
-            <div class="manual-content">
-                <p style="margin-bottom: 25px; line-height: 1.8;">
-                    <strong>「ダメージ計算機MS」</strong>はモンスト用ダメージ計算ツールです。<br>
-                    アビリティや紋章・属性効果など、キャラにかかる倍率を選択・入力することで敵に与えるダメージをシンプルに求めやすくします。    
-                    また、ワンパン判定機能を搭載し、計算結果のダメージで仮想敵を倒せるか簡単にチェックすることができます。
-                </p>
-                <hr style="border: 0; border-top: 1px dashed #ddd; margin-bottom: 20px;">
-                <h2>計算モード</h2>
-                <p>キャラクターが敵に与えるダメージを計算します。計算結果は画面下部に表示されます。</p>
-                
-                <h3>基本操作</h3>
-                <ol>
-                    <li>キャラクターの素の攻撃力と、加算される加撃量を入力してください。</li>
-                    <li>アビリティやSS、バフなどによりキャラクターにかかる倍率を選択・入力してください。</li>
-                    <li>紋章によりかかる倍率を選択してください。</li>
-                    <li>攻撃対象とする敵のデータを入力してください。
-                        <div class="manual-note">※本体倍率や直殴り倍率等は「(クエスト名) 敵データ」などTwitterで検索すると情報を得ることができます。</div>
-                    </li>
-                    <li>ステージにかかる属性倍率およびギミック倍率を入力してください。</li>
-                </ol>
+        if (document.getElementById('chk_pfield') && document.getElementById('chk_pfield').checked) {
+            apply("パワーフィールド" + getGradeSuffix('pfieldSelect'), parseFloat(document.getElementById('pfieldSelect').value) || 1.0);
+        }
 
-                <h3>直殴りと友情コンボの切替</h3>
-                <p>画面上部のボタンにより切替を行うことができます。選択によって一部倍率の表示有無が変更されます。</p>
+        if (document.getElementById('chk_SS').checked) {
+            apply("SS倍率1", parseFloat(document.getElementById('SSRate').value) || 1.0);
+        }
+        if (document.getElementById('chk_SS2').checked) {
+            apply("SS倍率2", parseFloat(document.getElementById('SS2Rate').value) || 1.0);
+        }
 
-                <h2>ワンパン判定</h2>
-                <p>計算モードで入力を行った情報を基に、対象の敵がワンパン可能かどうか判定します。</p>
-                
-                <h3>基本操作</h3>
-                <ol>
-                    <li>「計算モード」タブで数値・倍率をすべて入力してください。</li>
-                    <li>「ワンパン判定」タブに切り替え、敵の最大HPを入力してください。</li>
-                    <li>将命/兵命削り、10%削りアイテムを使用している場合はチェックを入れてください。</li>
-                </ol>
+        if (document.getElementById('chk_naguri').checked) {
+            apply("直殴り倍率", parseFloat(document.getElementById('naguriRate').value) || 1.0);
+        }
+    }
 
-                <p style="text-align: right; margin-top: 40px; color: #888; font-size: 12px; border-top: 1px solid #eee; padding-top: 10px;">
-                    制作：ほととぎす(Twitter:hototogisu2003)
-                </p>
-            </div>
-        </div>
-</div>
+    // === 友情モード ===
+    if (currentAttackMode === 'friend') {
+        if (document.getElementById('chk_friend_boost').checked) {
+            apply("友情ブースト" + getGradeSuffix('friendBoostSelect'), parseFloat(document.getElementById('friendBoostSelect').value) || 1.0);
+        }
+        
+        if (document.getElementById('chk_friendhalf') && document.getElementById('chk_friendhalf').checked) {
+            apply("誘発", 0.5);
+        }
 
-    <div id="contact-container" style="display: none;">
-        <div class="category-section">
-            <h3 class="category-title">お問い合わせ</h3>
-            <div class="manual-content" style="text-align: center; padding: 40px 20px;">
-                
-                <p style="margin-bottom: 30px; font-weight: bold; color: #555;">
-                    不具合・バグの報告、追加機能実装の要望等はこちらにご連絡ください
-                </p>
+        if (document.getElementById('chk_friendsoko') && document.getElementById('chk_friendsoko').checked) {
+             const sokoVal = document.getElementById('sokoSelect') ? document.getElementById('sokoSelect').value : 1.0;
+             // 底力のIDと共用しているので、sokoSelectから等級名を取得
+             apply("友情底力" + getGradeSuffix('sokoSelect'), parseFloat(sokoVal) || 1.0);
+        }
 
-                <a href="https://marshmallow-qa.com/di9n1qu75lvijbl?t=ejYUls&utm_medium=url_text&utm_source=promotion" target="_blank" style="
-                    display: inline-block;
-                    background-color: #E91E63; /* マシュマロっぽい色 */
-                    color: white;
-                    text-decoration: none;
-                    padding: 15px 30px;
-                    border-radius: 30px;
-                    font-weight: bold;
-                    box-shadow: 0 4px 10px rgba(233, 30, 99, 0.3);
-                    transition: transform 0.2s;
-                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                    お問い合わせフォーム <br>(マシュマロ) ↗
-                </a>
+        if (document.getElementById('chk_ffield') && document.getElementById('chk_ffield').checked) {
+            apply("友情フィールド", 1.5);
+        }
 
-                <p style="margin-top: 18px; font-size: 12px; color: #999;">
-                    ※外部サイトへ移動します
-                </p>
+        if (document.getElementById('chk_friendbuff') && document.getElementById('chk_friendbuff').checked) {
+            apply("友情バフ", parseFloat(document.getElementById('friendbuffRate').value) || 1.0);
+        }
 
-            </div>
-        </div>
-    </div>
+        if (document.getElementById('chk_yujo') && document.getElementById('chk_yujo').checked) {
+            apply("友情倍率", parseFloat(document.getElementById('yujoRate').value) || 1.0);
+        }
+    }
 
-</div>
+    // === 共通 ===
 
-<script src="script.js"></script>
 
-</body>
-</html>
-<script src="script.js"></script>
+    // 弱点キラー (弱点ヒット時のみ有効)
+    if (document.getElementById('chk_weak_killer').checked) {
+        const val = parseFloat(document.getElementById('weak_killerRate').value) || 1.0;
+        if (isMultiMode) {
+            rate_weak_killer = val;
+        } else {
+            apply("弱点キラー", val);
+        }
+    }
 
-</body>
-</html>
+    // 紋章(対弱)
+    if (document.getElementById('chk_emb2').checked) {
+        const val = 1.10;
+        if (isMultiMode) {
+            rate_vs_weak = val;
+        } else {
+            apply("紋章(対弱)", val);
+        }
+    }
+
+    // 弱点倍率
+    // 常に値を取得する (デフォルト3.0)
+    const val_weak = parseFloat(document.getElementById('weakRate').value) || 3.0;
+    
+    if (isMultiMode) {
+        rate_weak = val_weak; // 複数モード: チェック有無に関わらず値を採用
+    } else {
+        // 通常モード: チェックがある場合のみ適用
+        if (document.getElementById('chk_weak').checked) {
+            apply("弱点倍率", val_weak);
+        }
+    }
+
+    // 弱点判定倍率
+    // 常に値を取得する (デフォルト1.0)
+    const val_judge = parseFloat(document.getElementById('weakpointRate').value) || 1.0;
+
+    if (isMultiMode) {
+        rate_judge = val_judge; // 複数モード: チェック有無に関わらず値を採用
+    } else {
+        if (document.getElementById('chk_weakpoint').checked) {
+            apply("弱点判定倍率", val_judge);
+        }
+    }
+
+    // 本体倍率
+    // 常に値を取得する (デフォルト1.0)
+    const val_body = parseFloat(document.getElementById('hontaiRate').value) || 1.0;
+
+    if (isMultiMode) {
+        rate_body = val_body; // 複数モード: チェック有無に関わらず値を採用
+    } else {
+        if (document.getElementById('chk_hontai').checked) {
+            apply("本体倍率", val_body);
+        }
+    }
+    if (document.getElementById('chk_aura').checked) {
+        apply("パワーオーラ" + getGradeSuffix('auraSelect'), parseFloat(document.getElementById('auraSelect').value) || 1.0);
+    }
+    if (document.getElementById('chk_hiyoko') && document.getElementById('chk_hiyoko').checked) {
+        apply("ヒヨコ", 1/3);
+    }
+    if (document.getElementById('chk_killer').checked) {
+        apply("その他キラー", parseFloat(document.getElementById('killerRate').value) || 1.0);
+    }
+    if (document.getElementById('chk_buff').checked) {
+        apply("バフ", parseFloat(document.getElementById('buffRate').value) || 1.0);
+    }
+    if (document.getElementById('chk_guardian').checked) {
+        apply("守護獣", parseFloat(document.getElementById('guardianRate').value) || 1.0);
+    }
+    if (document.getElementById('chk_other').checked) {
+        apply("その他", parseFloat(document.getElementById('otherRate').value) || 1.0);
+    }
+
+    if (document.getElementById('chk_emb1').checked) apply("紋章(対属性)", 1.25);
+    if (document.getElementById('chk_emb3').checked) apply("紋章(対将/兵)", 1.10);
+    if (document.getElementById('chk_emb4').checked) apply("紋章(守護獣)", 1.08);
+
+
+    if (document.getElementById('chk_def').checked) {
+        apply("防御ダウン倍率", parseFloat(document.getElementById('defRate').value) || 1.0);
+    }
+    
+    // 怒り倍率にも適用 (小、中、大)
+    if (document.getElementById('chk_angry').checked) {
+        apply("怒り倍率" + getGradeSuffix('angrySelect'), parseFloat(document.getElementById('angrySelect').value) || 1.0);
+    }
+    
+    if (document.getElementById('chk_mine').checked) {
+        apply("地雷倍率", parseFloat(document.getElementById('mineRate').value) || 1.0);
+    }
+    if (document.getElementById('chk_special').checked) {
+        apply("特殊倍率", parseFloat(document.getElementById('specialRate').value) || 1.0);
+    }
+
+    // ステージ倍率
+    const stageSelect = document.getElementById('stageEffectSelect');
+    const customInput = document.getElementById('customStageRate');
+    if (stageSelect) {
+        let stageBase = 1.0;
+        let rateName = "属性倍率";
+        
+        // セレクトボックスのテキストを取得して名前に反映（例: 属性効果超絶UP）
+        if (stageSelect.value === 'custom') {
+            stageBase = parseFloat(customInput.value) || 1.0;
+            rateName = "属性倍率(手動)";
+        } else {
+            stageBase = parseFloat(stageSelect.value) || 1.0;
+            // 選択中のテキストを取得 (例: "通常 (x1.33)" -> "通常")
+            const text = stageSelect.options[stageSelect.selectedIndex].text;
+            const label = text.split(' ')[0];
+            if (label !== "なし") {
+                rateName = "属性倍率(" + label + ")";
+            }
+        }
+
+        let stageMultiplier = stageBase;
+        if (document.getElementById('chk_stageSpecial').checked && stageBase !== 1.0) {
+            let temp = ((stageBase - 1) / 0.33) * 0.596 + 1;
+            stageMultiplier = Math.round(temp * 100000) / 100000;
+            rateName = "超バランス型(" + rateName.replace("属性倍率", "").replace(/[()]/g, "") + ")";
+        }
+        
+        apply(rateName, stageMultiplier);
+
+        const displayElem = document.getElementById('stageRealRate');
+        if (displayElem) displayElem.innerText = Math.floor(stageMultiplier * 100000) / 100000;
+    }
+
+    if (document.getElementById('chk_gimmick').checked) {
+        apply("ギミック倍率", parseFloat(document.getElementById('gimmickRate').value) || 1.0);
+    }
+let finalDamage = 0;
+
+    if (isMultiMode) {
+        // --- 複数判定モードの計算 ---
+        
+        // 共通ダメージ（ベース）
+        const commonDamage = actualAttack * totalMultiplier;
+
+        // 1. 本体へのダメージ (1判定固定 * 本体倍率)
+        const dmg_body = Math.floor(commonDamage * rate_body);
+
+        // 2. 弱点へのダメージ (弱点数 * 弱点倍率 * 弱点キラー * 対弱)
+        const count_weak = parseFloat(document.getElementById('val_weak_cnt').value) || 0;
+        // 弱点用倍率を合成
+        const multi_weak_total = rate_weak * rate_weak_killer * rate_vs_weak;
+        const dmg_weak_unit = Math.floor(commonDamage * multi_weak_total);
+        const dmg_weak_total = dmg_weak_unit * count_weak;
+
+        // 3. 弱点判定へのダメージ (判定数 * 判定倍率) ※キラー・対弱は乗らない
+        const count_judge = parseFloat(document.getElementById('val_judge_cnt').value) || 0;
+        const dmg_judge_unit = Math.floor(commonDamage * rate_judge);
+        const dmg_judge_total = dmg_judge_unit * count_judge;
+
+        // 総和
+        finalDamage = dmg_body + dmg_weak_total + dmg_judge_total;
+
+        // ログへの追記 (内訳が見えるように)
+        breakdown.push({ name: "--- 複数判定内訳 ---", val: "" });
+        breakdown.push({ name: `本体 (x${rate_body})`, val: dmg_body.toLocaleString() });
+        if(count_weak > 0) {
+            breakdown.push({ name: `弱点 (x${Math.round(multi_weak_total*100)/100})`, val: `${dmg_weak_unit.toLocaleString()} × ${count_weak}hit` });
+        }
+        if(count_judge > 0) {
+            breakdown.push({ name: `弱点判定 (x${rate_judge})`, val: `${dmg_judge_unit.toLocaleString()} × ${count_judge}hit` });
+        }
+
+    } else {
+        // --- 通常モード（既存） ---
+        finalDamage = Math.floor((actualAttack * totalMultiplier) + 0.00001);
+    }
+
+    // 結果表示（既存コードと同じ）
+    currentFinalDamage = finalDamage;
+    const resultElem = document.getElementById('result');
+    if (resultElem) resultElem.innerText = currentFinalDamage.toLocaleString();
+
+    const verifyDisplay = document.getElementById('verifyDamageDisplay');
+    if (verifyDisplay) verifyDisplay.innerText = currentFinalDamage.toLocaleString();
+
+    // 内訳リスト表示
+    const listElem = document.getElementById('detail-list');
+    if (listElem) {
+        listElem.innerHTML = "";
+        breakdown.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'detail-item';
+            li.innerHTML = `<span class="detail-name">${item.name}</span><span class="detail-val">${item.val}</span>`;
+            listElem.appendChild(li);
+        });
+    }
+
+    checkOneshot();
+}
+
+/* -------------------------------------------------------
+   ワンパン判定ロジック
+------------------------------------------------------- */
+function checkOneshot() {
+    const hpInput = document.getElementById('enemyHp');
+    const judgeText = document.getElementById('judge-text');
+    const resultBox = document.getElementById('verify-result-box');
+    const realHpElem = document.getElementById('displayRealHp');
+
+    if (!hpInput || !judgeText) return;
+
+    const maxHp = parseFloat(hpInput.value);
+
+    if (isNaN(maxHp) || maxHp <= 0) {
+        judgeText.innerText = "HPを入力してください";
+        resultBox.className = "result-box"; 
+        if (realHpElem) realHpElem.innerText = "-";
+        return;
+    }
+
+    let reduceRate = 0;
+    const enableAB = document.getElementById('chk_enableAB');
+    const selAB = document.getElementById('sel_reduceAB');
+
+    if (enableAB && enableAB.checked && selAB) {
+        reduceRate += parseFloat(selAB.value) || 0;
+    }
+
+    if (document.getElementById('chk_reduceC').checked) {
+        reduceRate += 0.10;
+    }
+
+    const currentEnemyHp = Math.floor(maxHp * (1 - reduceRate));
+
+    if (realHpElem) realHpElem.innerText = currentEnemyHp.toLocaleString();
+
+    if (currentFinalDamage >= currentEnemyHp) {
+        judgeText.innerHTML = `ワンパンできます`;
+        resultBox.className = "result-box judge-success";
+    } else {
+        judgeText.innerHTML = `ワンパンできません`;
+        resultBox.className = "result-box judge-fail";
+    }
+}
+
+/* -------------------------------------------------------
+   更新履歴の表示切り替え
+------------------------------------------------------- */
+function toggleHistory() {
+    const log = document.getElementById('history-log');
+    if (log) {
+        log.style.display = (log.style.display === 'none') ? 'block' : 'none';
+    }
+}
+
+document.addEventListener('click', function(event) {
+    const log = document.getElementById('history-log');
+    const bell = document.getElementById('bell-icon');
+    if (log && bell && log.style.display === 'block') {
+        if (!log.contains(event.target) && !bell.contains(event.target)) {
+            log.style.display = 'none';
+        }
+    }
+});
+
+/* -------------------------------------------------------
+   全入力リセット処理
+------------------------------------------------------- */
+function resetAll() {
+    if (!confirm("入力内容をすべてリセットしますか？")) return;
+
+    const inputs = document.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => input.value = "");
+
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(chk => chk.checked = false);
+
+    const selects = document.querySelectorAll('select');
+    selects.forEach(sel => sel.selectedIndex = 0);
+
+    const dependentInputs = document.querySelectorAll('.category-section input[type="number"], .category-section select');
+    dependentInputs.forEach(el => {
+        if (el.id !== 'stageEffectSelect') el.disabled = true;
+    });
+
+    const customStageInput = document.getElementById('customStageRate');
+    if (customStageInput) customStageInput.style.display = 'none';
+    
+    const realHpElem = document.getElementById('displayRealHp');
+    if (realHpElem) realHpElem.innerText = "-";
+
+    calculate();
+}
+
+// 初期化実行
+switchAttackMode();
