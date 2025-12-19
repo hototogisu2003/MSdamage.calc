@@ -619,6 +619,7 @@ function calculate() {
         rate_body = val_body; // 複数モード: チェック有無に関わらず値を採用
     } else {
         if (document.getElementById('chk_hontai').checked) {
+            apply("本体倍率", val_body);
         }
     }
     if (document.getElementById('chk_def').checked) {
