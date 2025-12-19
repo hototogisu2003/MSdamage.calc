@@ -35,17 +35,21 @@ function updateStageUI() {
     const type = typeSelect.value;
 
     if (type === 'none') {
-        // 「なし」の場合: 2段目と入力欄を隠す
+        // 「なし」の場合: 隠して無効化
         magSelect.style.display = 'none';
+        magSelect.disabled = true; // ★重要: 無効化
+        
         customInput.style.display = 'none';
         if(superBalanceArea) superBalanceArea.style.display = 'none';
     } else {
-        // 「有利/不利」の場合: 2段目を表示
+        // 「有利/不利」の場合: 表示して有効化
         magSelect.style.display = 'block';
-        
+        magSelect.disabled = false; // ★重要: ロック解除！
+
         // --- プルダウン生成 ---
-        const currentVal = magSelect.value; // 値を一時保存
+        const currentVal = magSelect.value;
         magSelect.innerHTML = "";
+        
         const data = STAGE_ATTR_DATA[type];
         if (data) {
             data.options.forEach(opt => {
@@ -56,7 +60,7 @@ function updateStageUI() {
             });
         }
         
-        // 以前の値があれば復元、なければ先頭(通常)を選択
+        // 値の復元または初期化
         if (currentVal && Array.from(magSelect.options).some(o => o.value === currentVal)) {
             magSelect.value = currentVal;
         }
@@ -68,7 +72,7 @@ function updateStageUI() {
     }
 
     // 2段目の状態に合わせて入力欄の表示/非表示を更新
-    handleStageMagnitudeChange(); 
+    handleStageMagnitudeChange();
 }
 
 /* -------------------------------------------------------
@@ -829,11 +833,10 @@ function resetAll() {
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(chk => chk.checked = false);
 
-    // セレクトボックスを「初期値(selectedがついているもの)」に戻す
+    // セレクトボックスを初期値(selectedがついているもの)に戻す
     const selects = document.querySelectorAll('select');
     selects.forEach(sel => {
         let defaultIdx = 0;
-        // defaultSelected プロパティを持つオプションを探す
         for (let i = 0; i < sel.options.length; i++) {
             if (sel.options[i].defaultSelected) {
                 defaultIdx = i;
@@ -843,14 +846,14 @@ function resetAll() {
         sel.selectedIndex = defaultIdx;
     });
 
-    // カテゴリ内の入力欄を無効化（属性倍率の選択プルダウンは除く）
+    // 入力欄を無効化（ただし属性倍率の親セレクトボックスは除外）
     const dependentInputs = document.querySelectorAll('.category-section input[type="number"], .category-section select');
     dependentInputs.forEach(el => {
-        // ★修正ポイント: ID名を正しいもの(stageTypeSelect)に変更
+        // ★修正: 正しいID 'stageTypeSelect' を指定
         if (el.id !== 'stageTypeSelect') {
             el.disabled = true;
         } else {
-            el.disabled = false; // 属性倍率は常に有効
+            el.disabled = false;
         }
     });
 
@@ -860,10 +863,9 @@ function resetAll() {
     const realHpElem = document.getElementById('displayRealHp');
     if (realHpElem) realHpElem.innerText = "-";
 
-    // ★追加: 属性倍率のUI表示状態も更新する
+    // ★重要: リセット後のUI状態を更新して整合性を取る
     updateStageUI();
     
-    // 計算実行
     calculate();
 }
 
