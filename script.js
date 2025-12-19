@@ -343,6 +343,32 @@ function updateBonus(amount, checkbox) {
 }
 
 /* -------------------------------------------------------
+   スポットの排他制御（メインとサブを同時選択不可にする）
+------------------------------------------------------- */
+function toggleSpot(element) {
+    // IDごとの設定値（加算値と、対になる相手のID）
+    const settings = {
+        'chk_spot':     { amount: 2000, otherId: 'chk_spot_sub', otherAmount: 1500 },
+        'chk_spot_sub': { amount: 1500, otherId: 'chk_spot',     otherAmount: 2000 }
+    };
+
+    const config = settings[element.id];
+    if (!config) return;
+
+    // 1. まずクリックされた自分自身の計算を行う
+    updateBonus(config.amount, element);
+
+    // 2. もし自分が「ON」になった時、相方が「ON」なら強制的にOFFにする
+    if (element.checked) {
+        const otherEl = document.getElementById(config.otherId);
+        if (otherEl && otherEl.checked) {
+            otherEl.checked = false;               // チェックを外す
+            updateBonus(config.otherAmount, otherEl); // 相手の分の数値を減算する
+        }
+    }
+}
+
+/* -------------------------------------------------------
    わくわくの実 詳細パネルの開閉
 ------------------------------------------------------- */
 function toggleFruitDetail() {
