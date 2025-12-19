@@ -478,7 +478,9 @@ function calculate() {
     const apply = (name, rate) => {
         if (rate !== 1.0 && rate !== 0) {
             totalMultiplier *= rate;
-            breakdown.push({ name: name, val: "x" + Math.round(rate * 10000) / 10000 });
+            
+            // ★修正: Math.round(...) を削除し、生の数値をそのまま表示するように変更
+            breakdown.push({ name: name, val: "x" + rate }); 
         }
     };
 
