@@ -821,18 +821,37 @@ document.addEventListener('click', function(event) {
 function resetAll() {
     if (!confirm("入力内容をすべてリセットしますか？")) return;
 
+    // 数値入力欄をクリア
     const inputs = document.querySelectorAll('input[type="number"]');
     inputs.forEach(input => input.value = "");
 
+    // チェックボックスを外す
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(chk => chk.checked = false);
 
+    // セレクトボックスを「初期値(selectedがついているもの)」に戻す
     const selects = document.querySelectorAll('select');
-    selects.forEach(sel => sel.selectedIndex = 0);
+    selects.forEach(sel => {
+        let defaultIdx = 0;
+        // defaultSelected プロパティを持つオプションを探す
+        for (let i = 0; i < sel.options.length; i++) {
+            if (sel.options[i].defaultSelected) {
+                defaultIdx = i;
+                break;
+            }
+        }
+        sel.selectedIndex = defaultIdx;
+    });
 
+    // カテゴリ内の入力欄を無効化（属性倍率の選択プルダウンは除く）
     const dependentInputs = document.querySelectorAll('.category-section input[type="number"], .category-section select');
     dependentInputs.forEach(el => {
-        if (el.id !== 'stageEffectSelect') el.disabled = true;
+        // ★修正ポイント: ID名を正しいもの(stageTypeSelect)に変更
+        if (el.id !== 'stageTypeSelect') {
+            el.disabled = true;
+        } else {
+            el.disabled = false; // 属性倍率は常に有効
+        }
     });
 
     const customStageInput = document.getElementById('customStageRate');
@@ -841,6 +860,10 @@ function resetAll() {
     const realHpElem = document.getElementById('displayRealHp');
     if (realHpElem) realHpElem.innerText = "-";
 
+    // ★追加: 属性倍率のUI表示状態も更新する
+    updateStageUI();
+    
+    // 計算実行
     calculate();
 }
 
