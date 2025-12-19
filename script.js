@@ -706,7 +706,7 @@ function calculate() {
             // 倍率1.0超えの場合のみ適用 (手動入力で1.0以下にした場合などを除外するため)
             if (stageBase > 1.0) {
                 let temp = ((stageBase - 1) / 0.33) * 0.596 + 1;
-                stageMultiplier = Math.round(temp * 100000) / 100000;
+                stageMultiplier = Math.round(temp * 1000000) / 1000000;
                 rateName = "超バランス型(" + rateName.replace("属性倍率", "").replace(/[()]/g, "") + ")";
             }
         }
@@ -714,7 +714,7 @@ function calculate() {
         apply(rateName, stageMultiplier);
 
         const displayElem = document.getElementById('stageRealRate');
-        if (displayElem) displayElem.innerText = Math.floor(stageMultiplier * 100000) / 100000;
+        if (displayElem) displayElem.innerText = Math.floor(stageMultiplier * 1000000) / 1000000;
     }
 
     if (document.getElementById('chk_gimmick').checked) {
