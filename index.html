@@ -491,6 +491,13 @@
                     <input type="number" id="killerRate" step="0.01" oninput="calculate()" disabled>
                 </div>
 
+                <div class="grid-item" >
+                    <label class="check-label">
+                        <input type="checkbox" id="chk_sleep" onchange="calculate()">
+                        睡眠（初撃x1.5）
+                    </label>
+                </div>
+
                 <div class="grid-item">
                     <label class="check-label">
                         <input type="checkbox" id="chk_buff" onchange="toggleInput('buffRate', 'chk_buff')">

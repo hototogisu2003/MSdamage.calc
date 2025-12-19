@@ -576,8 +576,20 @@ function calculate() {
     if (document.getElementById('chk_hiyoko') && document.getElementById('chk_hiyoko').checked) {
         apply("ヒヨコ", 1/3);
     }
+        // 弱点キラー (弱点ヒット時のみ有効)
+    if (document.getElementById('chk_weak_killer').checked) {
+        const val = parseFloat(document.getElementById('weak_killerRate').value) || 1.0;
+        if (isMultiMode) {
+            rate_weak_killer = val;
+        } else {
+            apply("弱点キラー", val);
+        }
+    }
     if (document.getElementById('chk_killer').checked) {
         apply("その他キラー", parseFloat(document.getElementById('killerRate').value) || 1.0);
+    }
+    if (document.getElementById('chk_sleep') && document.getElementById('chk_sleep').checked) {
+        apply("睡眠", 1.5);
     }
     if (document.getElementById('chk_buff').checked) {
         apply("バフ", parseFloat(document.getElementById('buffRate').value) || 1.0);
@@ -600,17 +612,6 @@ function calculate() {
     }
     if (document.getElementById('chk_emb3').checked) apply("紋章(対将/兵)", 1.10);
     if (document.getElementById('chk_emb4').checked) apply("紋章(守護獣)", 1.08);
-
-
-    // 弱点キラー (弱点ヒット時のみ有効)
-    if (document.getElementById('chk_weak_killer').checked) {
-        const val = parseFloat(document.getElementById('weak_killerRate').value) || 1.0;
-        if (isMultiMode) {
-            rate_weak_killer = val;
-        } else {
-            apply("弱点キラー", val);
-        }
-    }
 
     // 弱点倍率
     // 常に値を取得する (デフォルト3.0)

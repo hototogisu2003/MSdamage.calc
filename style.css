@@ -372,20 +372,24 @@ input[type="checkbox"] {
 /* ==============================================
    4. UIコンポーネント
    ============================================== */
+/* タブ切り替えボタン */
 .tab-container {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    background-color: #eee;
+    padding: 4px;
+    border-radius: 4px; /* ★変更: 25px(または30px) から 4px へ */
+    gap: 4px; 
 }
 
 .tab-button {
-    padding: 10px 20px;
+    padding: 10px 40px;
     border: none;
     background-color: #e0e0e0;
     color: #555;
     font-weight: bold;
-    border-radius: 20px;
+    border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
     font-size: 14px;
