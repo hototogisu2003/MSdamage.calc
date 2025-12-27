@@ -731,10 +731,9 @@ let finalDamage = 0;
         // 1. 本体へのダメージ (1判定固定 * 本体倍率)
         const dmg_body = Math.floor(commonDamage * rate_body);
 
-        // 2. 弱点へのダメージ (弱点数 * 弱点倍率 * 弱点キラー * 対弱)
+        // 2. 弱点へのダメージ (弱点数 * 弱点倍率 * 弱点キラー * 対弱 * 弱点判定倍率)
         const count_weak = parseFloat(document.getElementById('val_weak_cnt').value) || 0;
-        // 弱点用倍率を合成
-        const multi_weak_total = rate_weak * rate_weak_killer * rate_vs_weak;
+        const multi_weak_total = rate_weak * rate_judge * rate_weak_killer * rate_vs_weak; 
         const dmg_weak_unit = Math.floor(commonDamage * multi_weak_total);
         const dmg_weak_total = dmg_weak_unit * count_weak;
 
