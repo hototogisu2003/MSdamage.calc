@@ -751,22 +751,3 @@ input[type="checkbox"] {
         grid-template-columns: repeat(4, 1fr) !important;
     }
 }
-
-/* ==============================================
-   8. 複数判定ボタンのダークモード修正
-   ============================================== */
-.multi-mode-box {
-    /* ライトモード（デフォルト） */
-    background-color: #e8f5e9;
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: 1px solid #8bc34a;
-    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
-}
-
-/* ダークモード時 */
-[data-theme="dark"] .multi-mode-box {
-    background-color: rgba(139, 195, 74, 0.15); /* 暗い背景に馴染む緑 */
-    border-color: #558b2f;
-    color: #e0e0e0;
-}
