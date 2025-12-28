@@ -881,6 +881,12 @@ function resetAll() {
         sel.selectedIndex = defaultIdx;
     });
 
+    // わくわくの実の選択状態を解除
+    const selectedFruits = document.querySelectorAll('.fruit-item.selected');
+    selectedFruits.forEach(item => {
+        item.classList.remove('selected');
+    });
+
     // 入力欄を無効化（ただし属性倍率の親セレクトボックスは除外）
     const dependentInputs = document.querySelectorAll('.category-section input[type="number"], .category-section select');
     dependentInputs.forEach(el => {
