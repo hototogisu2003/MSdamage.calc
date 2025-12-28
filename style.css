@@ -706,3 +706,24 @@ input[type="checkbox"] {
         grid-template-columns: repeat(4, 1fr) !important;
     }
 }
+
+/* ==============================================
+   9. ダークモード修正 (スイッチの視認性向上)
+   ============================================== */
+
+/* スイッチ全体の背景をグレーにする */
+[data-theme="dark"] .mode-switch-container {
+    background-color: #555555 !important;
+}
+
+/* 選択されている側のボタンを白くする */
+[data-theme="dark"] .mode-switch-label input:checked + .mode-switch-text {
+    background-color: #ffffff !important;
+    color: var(--primary-dark) !important; /* 文字色は濃い緑 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+/* 選択されていない側の文字色を明るくする */
+[data-theme="dark"] .mode-switch-text {
+    color: #cccccc;
+}
