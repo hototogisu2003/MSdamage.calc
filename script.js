@@ -226,9 +226,15 @@ function switchTab(mode) {
 ------------------------------------------------------- */
 function toggleMultiMode() {
     const isMulti = document.getElementById('chk_multi_mode').checked;
-    const inputs = document.getElementById('multi-inputs');
-    if (inputs) {
-        inputs.style.display = isMulti ? 'flex' : 'none';
+    const container = document.getElementById('multi-inputs');
+    
+    if (container) {
+        container.style.display = isMulti ? 'flex' : 'none';
+        
+        const inputs = container.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.disabled = !isMulti; 
+        });
     }
     calculate(); // 再計算
 }
