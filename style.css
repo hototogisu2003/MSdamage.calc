@@ -742,3 +742,12 @@ input[type="checkbox"] {
 [data-theme="dark"] .mode-switch-text {
     color: #cccccc;
 }
+
+/* ==============================================
+   10. タブボタンの優先順位修正
+   ============================================== */
+/* ダークモード時、選択中のタブボタンがホバー色に負けないようにする */
+[data-theme="dark"] .tab-button.active {
+    background-color: var(--primary-color) !important;
+    color: #fff !important;
+}
