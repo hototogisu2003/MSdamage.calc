@@ -851,6 +851,49 @@ document.addEventListener('click', function(event) {
 });
 
 /* -------------------------------------------------------
+   ダークモード切り替え処理
+------------------------------------------------------- */
+function toggleTheme() {
+    const body = document.body;
+    const btn = document.getElementById('theme-toggle-btn');
+    
+    // 現在のテーマを確認
+    const currentTheme = body.getAttribute('data-theme');
+    
+    if (currentTheme === 'dark') {
+        // ダーク -> ライトへ
+        body.setAttribute('data-theme', 'light');
+        btn.innerText = "☀️"; // 太陽マーク
+        localStorage.setItem('theme', 'light'); // 設定を保存
+    } else {
+        // ライト -> ダークへ
+        body.setAttribute('data-theme', 'dark');
+        btn.innerText = "🌙"; // 月マーク
+        localStorage.setItem('theme', 'dark'); // 設定を保存
+    }
+}
+
+/* -------------------------------------------------------
+   初期化: ページ読み込み時に保存されたテーマを適用
+------------------------------------------------------- */
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const btn = document.getElementById('theme-toggle-btn');
+    
+    if (savedTheme === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+        if(btn) btn.innerText = "🌙";
+    } else {
+        // デフォルト (light)
+        document.body.setAttribute('data-theme', 'light');
+        if(btn) btn.innerText = "☀️";
+    }
+}
+
+// ページ読み込み時に実行
+document.addEventListener('DOMContentLoaded', initTheme);
+
+/* -------------------------------------------------------
    全入力リセット処理
 ------------------------------------------------------- */
 function resetAll() {
