@@ -442,11 +442,6 @@ function calculate() {
         // 直殴り: ベース + 加撃 (入力欄の値をそのまま使う)
         const bonusElem = document.getElementById('attackBonus');
         const manualBonus = parseFloat(bonusElem.value) || 0;
-        
-        /* ★削除・変更点：
-           以前ここにあった「presetBonus」の加算処理は削除しました。
-           チェックボックスの値は「manualBonus（入力欄）」に含まれるようになったためです。
-        */
 
         // 合計を算出
         actualAttack = baseAttack + manualBonus;
@@ -456,9 +451,7 @@ function calculate() {
         // 内訳表示もシンプルに入力欄の値のみを表示
         if (manualBonus > 0) breakdown.push({ name: "加撃", val: "+" + manualBonus.toLocaleString() });
     }
-
-
-    
+        
     else {
         const yuugekiVal = parseFloat(document.getElementById('friendYuugekiSelect').value) || 1.0;
         actualAttack = Math.floor(baseAttack * yuugekiVal);
@@ -604,6 +597,9 @@ function calculate() {
     }
     if (document.getElementById('chk_guardian').checked) {
         apply("守護獣", parseFloat(document.getElementById('guardianRate').value) || 1.0);
+    }
+    if (document.getElementById('chk_connect').checked) {
+        apply("コネクトスキル", parseFloat(document.getElementById('connectRate').value) || 1.0);
     }
     if (document.getElementById('chk_other').checked) {
         apply("その他", parseFloat(document.getElementById('otherRate').value) || 1.0);
@@ -860,15 +856,15 @@ document.addEventListener('click', function(event) {
 function resetAll() {
     if (!confirm("入力内容をすべてリセットしますか？")) return;
 
-    // 数値入力欄をクリア
+    // 1. 数値入力欄をクリア
     const inputs = document.querySelectorAll('input[type="number"]');
     inputs.forEach(input => input.value = "");
 
-    // チェックボックスを外す
+    // 2. チェックボックスを外す
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(chk => chk.checked = false);
 
-    // セレクトボックスを初期値(selectedがついているもの)に戻す
+    // 3. セレクトボックスを初期値に戻す
     const selects = document.querySelectorAll('select');
     selects.forEach(sel => {
         let defaultIdx = 0;
@@ -881,23 +877,24 @@ function resetAll() {
         sel.selectedIndex = defaultIdx;
     });
 
-    // わくわくの実の選択状態を解除
+    // わくわくの実の選択解除
     const selectedFruits = document.querySelectorAll('.fruit-item.selected');
     selectedFruits.forEach(item => {
         item.classList.remove('selected');
     });
 
-    // 入力欄を無効化（ただし属性倍率の親セレクトボックスは除外）
+    // 4. 入力欄を無効化（ただし、属性倍率・敵HP・攻撃力は除外）
     const dependentInputs = document.querySelectorAll('.category-section input[type="number"], .category-section select');
     dependentInputs.forEach(el => {
-        // ★修正: 正しいID 'stageTypeSelect' を指定
-        if (el.id !== 'stageTypeSelect') {
+        // ★修正: 除外対象に 'enemyHp'(敵HP) と 'attack'(攻撃力) を追加
+        if (el.id !== 'stageTypeSelect' && el.id !== 'enemyHp' && el.id !== 'attack') {
             el.disabled = true;
         } else {
             el.disabled = false;
         }
     });
 
+    // 5. その他表示のリセット
     const customStageInput = document.getElementById('customStageRate');
     if (customStageInput) customStageInput.style.display = 'none';
     
@@ -905,7 +902,6 @@ function resetAll() {
     if (realHpElem) realHpElem.innerText = "-";
 
     updateStageUI();
-
     toggleMultiMode();
     
     calculate();

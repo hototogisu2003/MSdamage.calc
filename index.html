@@ -34,7 +34,11 @@
     <ul class="history-list">
          <li>
             <span class="date">2025/12/28</span>
-            <span class="content">　リセットボタンを押した時わくわくの実の選択がリセットされない、また複数判定ボタンを押しても値が入力できなくなる不具合を修正しました。</span>
+            <span class="content">　コネクトスキル倍率の枠を追加しました。</span>
+         </li>
+         <li>
+            <span class="date">2025/12/28</span>
+            <span class="content">　リセットボタンに関する不具合を修正しました。</span>
          </li>
          <li>
             <span class="date">2025/12/19</span>
@@ -523,6 +527,14 @@
                         守護獣倍率
                     </label>
                     <input type="number" id="guardianRate" step="0.01" oninput="calculate()" disabled>
+                </div>
+
+                <div class="grid-item">
+                    <label class="check-label">
+                        <input type="checkbox" id="chk_connect" onchange="toggleInput('connectRate', 'chk_connect')">
+                        コネクトスキル倍率
+                    </label>
+                    <input type="number" id="connectRate" step="0.01" oninput="calculate()" disabled>
                 </div>
 
                 <div class="grid-item" data-mode="direct">
