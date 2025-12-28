@@ -678,6 +678,17 @@ input[type="checkbox"] {
     border: 1px solid var(--border-color); /* 枠線もテーマに合わせる */
 }
 
+/* --- ワンパン判定結果ボックスの修正 --- */
+#verify-result-box {
+    position: relative;      /* フッターのような固定表示を解除 */
+    bottom: auto;
+    border-radius: 8px;
+    background-color: var(--card-bg) !important; /* ★重要: テーマ色を適用 */
+    border: 1px solid var(--border-color) !important;
+    box-shadow: none;
+    color: var(--text-color);
+}
+
 /* ==============================================
    5. レスポンシブ設定
    ============================================== */
