@@ -226,9 +226,15 @@ function switchTab(mode) {
 ------------------------------------------------------- */
 function toggleMultiMode() {
     const isMulti = document.getElementById('chk_multi_mode').checked;
-    const inputs = document.getElementById('multi-inputs');
-    if (inputs) {
-        inputs.style.display = isMulti ? 'flex' : 'none';
+    const container = document.getElementById('multi-inputs');
+    
+    if (container) {
+        container.style.display = isMulti ? 'flex' : 'none';
+        
+        const inputs = container.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.disabled = !isMulti; 
+        });
     }
     calculate(); // 再計算
 }
@@ -892,8 +898,9 @@ function resetAll() {
     const realHpElem = document.getElementById('displayRealHp');
     if (realHpElem) realHpElem.innerText = "-";
 
-    // ★重要: リセット後のUI状態を更新して整合性を取る
     updateStageUI();
+
+    toggleMultiMode();
     
     calculate();
 }
